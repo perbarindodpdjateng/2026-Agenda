@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Batas Waktu Daftar - Apex Bank Jateng</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: clamp(10px, 1.5vw, 16px);
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: fixed;
+        }
+
+        /* Background Particles - Responsive */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: clamp(2px, 0.5vw, 6px);
+            height: clamp(2px, 0.5vw, 6px);
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            from { transform: translateY(100vh) translateX(0); }
+            to { transform: translateY(-10vh) translateX(100px); }
+        }
+
+        /* Main Container - Diperbaiki */
+        .container {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            width: min(95vw, 1400px);
+            min-height: auto;
+            max-height: 95vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: clamp(1rem, 3vw, 2rem);
+            overflow-y: auto;
+            animation: containerFloat 6s ease-in-out infinite;
+        }
+
+        @keyframes containerFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-1vh); }
+        }
+
+        /* Typography - Fluid with clamp */
+        .event-title {
+            color: #fff;
+            font-size: clamp(2.9rem, 4vw, 3rem);
+            font-weight: 700;
+            margin-bottom: clamp(0.5rem, 1.5vh, 1rem);
+            text-transform: uppercase;
+            letter-spacing: clamp(0.1em, 0.5vw, 0.3em);
+            line-height: 0.8;
+            text-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            max-width: 100vw;
+        }
+
+        .event-subtitle {
+            color: #d1d5db;
+            font-size: clamp(2.5rem, 2vw, 1.3rem);
+            margin-bottom: clamp(0.3rem, 1vh, 0.5rem);
+            font-weight: 500;
+            letter-spacing: clamp(0.1em, 0.2vw, 0.15em);
+            max-width: 100vw;
+            line-height: 0.8;
+            display: block !important;
+            visibility: visible !important;
+        }
+
+        .event-location {
+            color: yellow;
+            font-size: clamp(2.8rem, 1.8vw, 1.1rem);
+            margin-bottom: clamp(1.5rem, 4vh, 2.5rem);
+            font-weight: 400;
+            letter-spacing: clamp(0.15em, 0.4vw, 0.3em);
+            text-transform: uppercase;
+            max-width: 100vw;
+            display: block !important;
+            visibility: visible !important;
+        }
+
+        /* Countdown Grid - Adaptive Layout */
+        .countdown-wrapper {
+            display: flex;
+            gap: clamp(0.5rem, 2vw, 2rem);
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            width: 100%;
+            max-width: 100%;
+        }
+
+        /* Time Cards - Fluid sizing with aspect ratio */
+        .time-card {
+            position: relative;
+            width: clamp(60px, 15vw, 140px);
+            aspect-ratio: 3/4;
+            background: linear-gradient(145deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: clamp(8px, 1.5vw, 16px);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            box-shadow: 
+                0 8px 24px rgba(0,0,0,0.4),
+                inset 0 0 0 1px rgba(255,255,255,0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .time-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 
+                0 12px 30px rgba(0,0,0,0.5),
+                0 0 20px rgba(99, 102, 241, 0.2),
+                inset 0 0 0 1px rgba(255,255,255,0.2);
+        }
+
+        /* Number Display - Fluid */
+        .time-value {
+            font-size: clamp(1.8rem, 8vw, 4.5rem);
+            font-weight: 700;
+            color: #fff;
+            line-height: 1;
+            display: block;
+            text-shadow: 0 0 15px rgba(99, 102, 241, 0.5);
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Labels */
+        .time-label {
+            font-size: clamp(0.6rem, 1.8vw, 0.9rem);
+            color: yellow;
+            text-transform: uppercase;
+            letter-spacing: clamp(0.1em, 0.3vw, 0.3em);
+            margin-top: clamp(0.3rem, 1.5vh, 0.8rem);
+            font-weight: 500;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        /* Separators */
+        .separator {
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
+            color: rgba(255,255,255,0.4);
+            animation: pulse 2s infinite;
+            padding: 0 clamp(0.2rem, 0.8vw, 0.5rem);
+            user-select: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        /* Glow Effect */
+        .glow {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(99, 102, 241, 0.4) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.5s;
+            pointer-events: none;
+            border-radius: inherit;
+        }
+
+        .time-card:hover .glow {
+            opacity: 1;
+        }
+
+        /* Progress Ring - Responsive SVG */
+        .progress-ring {
+            position: absolute;
+            top: -5%;
+            left: -5%;
+            width: 110%;
+            height: 110%;
+            transform: rotate(-90deg);
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        .progress-ring circle {
+            fill: none;
+            stroke: #6366f1;
+            stroke-width: 3;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 1s linear;
+        }
+
+        /* Perbaikan untuk Mobile Landscape */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .container {
+                flex-direction: column;
+                justify-content: flex-start;
+                padding-top: 1rem;
+                gap: 0.5rem;
+            }
+            
+            .event-title {
+                font-size: clamp(1rem, 3vh, 1.5rem);
+                margin-bottom: 0.3rem;
+            }
+            
+            .event-subtitle {
+                font-size: clamp(0.7rem, 2vh, 1rem);
+                margin-bottom: 0.2rem;
+            }
+            
+            .event-location {
+                font-size: clamp(0.6rem, 1.8vh, 0.9rem);
+                margin-bottom: 0.8rem;
+            }
+            
+            .time-card {
+                width: clamp(50px, 12vh, 100px);
+            }
+            
+            .time-value {
+                font-size: clamp(1.2rem, 6vh, 2.5rem);
+            }
+            
+            .time-label {
+                margin-top: 0.3rem;
+                font-size: 0.6rem;
+            }
+        }
+
+        /* Tablet Adjustments */
+        @media (min-width: 768px) and (max-width: 1024px) {
+            .time-card {
+                width: clamp(90px, 12vw, 130px);
+            }
+        }
+
+        /* Large Screens */
+        @media (min-width: 1920px) {
+            html {
+                font-size: 18px;
+            }
+        }
+
+        /* Touch Device Optimizations */
+        @media (hover: none) {
+            .time-card:hover {
+                transform: none;
+            }
+            
+            .time-card:active {
+                transform: scale(0.95);
+                transition: transform 0.1s;
+            }
+        }
+
+        /* Very Small Screens */
+        @media (max-width: 320px) {
+            .separator {
+                display: none;
+            }
+            
+            .countdown-wrapper {
+                gap: 0.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="particles" id="particles"></div>
+
+    <div class="container">
+        <h1 class="event-title">BATAS WAKTU DAFTAR</h1>
+        <h2 class="event-subtitle">Seminar dan Technical Assistance</h2>
+        <p class="event-subtitle">Apex BPR Bank Jateng</p>
+        <p class="event-location">Semarang, 2 Februari 2026</p>
+
+        <div class="countdown-wrapper">
+            <div class="time-card" id="days-card">
+                <div class="glow"></div>
+                <svg class="progress-ring" viewBox="0 0 200 250">
+                    <circle cx="100" cy="125" r="90" pathLength="100"/>
+                </svg>
+                <span class="time-value" id="days">00</span>
+                <span class="time-label">Hari</span>
+            </div>
+
+            <div class="separator">:</div>
+
+            <div class="time-card" id="hours-card">
+                <div class="glow"></div>
+                <svg class="progress-ring" viewBox="0 0 200 250">
+                    <circle cx="100" cy="125" r="90" pathLength="100"/>
+                </svg>
+                <span class="time-value" id="hours">00</span>
+                <span class="time-label">Jam</span>
+            </div>
+
+            <div class="separator">:</div>
+
+            <div class="time-card" id="minutes-card">
+                <div class="glow"></div>
+                <svg class="progress-ring" viewBox="0 0 200 250">
+                    <circle cx="100" cy="125" r="90" pathLength="100"/>
+                </svg>
+                <span class="time-value" id="minutes">00</span>
+                <span class="time-label">Menit</span>
+            </div>
+
+            <div class="separator">:</div>
+
+            <div class="time-card" id="seconds-card">
+                <div class="glow"></div>
+                <svg class="progress-ring" viewBox="0 0 200 250">
+                    <circle cx="100" cy="125" r="90" pathLength="100"/>
+                </svg>
+                <span class="time-value" id="seconds">00</span>
+                <span class="time-label">Detik</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Konfigurasi Target Tanggal: 30 Januari 2026 pukul 15:00:00 WIB
+        const targetDate = new Date(2026, 0, 30, 15, 00, 00).getTime();
+
+        // Create Particles - Responsive count
+        function createParticles() {
+            const container = document.getElementById('particles');
+            const count = window.innerWidth < 768 ? 20 : 50;
+            
+            for (let i = 0; i < count; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDuration = (Math.random() * 20 + 10) + 's';
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // Update Progress Ring
+        function updateProgressRing(svgElement, value, max) {
+            const circle = svgElement.querySelector('circle');
+            const percentage = (value / max) * 100;
+            circle.style.strokeDashoffset = 100 - percentage;
+        }
+
+        // Countdown Logic
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            if (distance < 0) {
+                document.querySelector('.event-title').textContent = "PENDAFTARAN DITUTUP";
+                document.querySelector('.event-subtitle').style.display = 'none';
+                document.querySelector('.event-location').style.display = 'none';
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            updateTimeValue('days', days);
+            updateTimeValue('hours', hours);
+            updateTimeValue('minutes', minutes);
+            updateTimeValue('seconds', seconds);
+
+            updateProgressRing(document.querySelector('#days-card svg'), days % 30, 30);
+            updateProgressRing(document.querySelector('#hours-card svg'), hours, 24);
+            updateProgressRing(document.querySelector('#minutes-card svg'), minutes, 60);
+            updateProgressRing(document.querySelector('#seconds-card svg'), seconds, 60);
+        }
+
+        function updateTimeValue(id, value) {
+            const element = document.getElementById(id);
+            const newValue = value.toString().padStart(2, '0');
+            
+            if (element.textContent !== newValue) {
+                element.textContent = newValue;
+            }
+        }
+
+        // Handle Resize
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                document.getElementById('particles').innerHTML = '';
+                createParticles();
+            }, 250);
+        });
+
+        // Initialize
+        createParticles();
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+    </script>
+</body>
+</html>
