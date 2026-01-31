@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Konfirmasi Kehadiran</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      font-size: 10px;
+      margin: 0;
+      padding: 2px;
+      background: transparent;
+      color: #f7f2f2;
+    }
+    .judul {
+      text-align: center;
+      margin: 0 0 0px;
+    }
+    .judul h1 {
+      font-size: 16px;
+      margin: 0;
+      color: #1a237e;
+    }
+    .judul h2 {
+      font-size: 14px;
+      margin: 0px 0;
+      color: #0d47a1;
+    }
+    .judul h3 {
+      font-size: 10px;
+      margin: 0px 0;
+      color: black;
+    }
+    form {
+      background: #fff;
+      padding: 10px;
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(0,0,0,.8);
+      position: relative;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 7px;
+      font-size: 10px;
+      margin-bottom: 6px;
+      border: 1px solid #bbb;
+      border-radius: 4px;
+    }
+    button {
+      background: #007bff;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+    button:active {
+      background: #0056b3;
+    }
+    
+    /* Loading Bar */
+    #loadingBar {
+      display: none;
+      height: 3px;
+      background: #e0e0e0;
+      border-radius: 2px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+    #progressBar {
+      height: 100%;
+      background: #007bff;
+      width: 0;
+      transition: width .3s;
+    }
+    
+    /* Blink Message Styles */
+    .message {
+      display: none;
+      text-align: center;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 4px;
+      font-weight: bold;
+      font-size: 12px;
+      animation: blink 1s infinite;
+    }
+    .message.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .message.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    
+    @keyframes blink {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0.3; }
+    }
+    
+    /* Searchable Dropdown Styles */
+    .searchable-select {
+      position: relative;
+      margin-bottom: 6px;
+    }
+    .searchable-select input {
+      width: 100%;
+      margin-bottom: 0;
+    }
+    .dropdown-list {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      max-height: 150px;
+      overflow-y: auto;
+      background: white;
+      border: 1px solid #bbb;
+      border-top: none;
+      border-radius: 0 0 4px 4px;
+      z-index: 1000;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .dropdown-list.active {
+      display: block;
+    }
+    .dropdown-item {
+      padding: 7px;
+      cursor: pointer;
+      color: #333;
+      border-bottom: 1px solid #eee;
+    }
+    .dropdown-item:hover {
+      background: #007bff;
+      color: white;
+    }
+    .dropdown-item.no-result {
+      color: #999;
+      cursor: default;
+    }
+    .dropdown-item.no-result:hover {
+      background: white;
+      color: #999;
+    }
+  </style>
+</head>
+<body>
+
+<div class="judul">
+  <h2>Seminar dan Technical Assistance</h2>
+  <h3>BPR/BPRS Anggota Apex Bank Jateng</h3>
+  <h3>Semarang, 02 Februari 2026</h3><br>
+</div>
+
+<form id="Form">
+  <input name="PesertaNama" required placeholder="Peserta (Nama)">
+  <input type="tel" name="PesertaNoWA" required placeholder="Peserta (NoWA), contoh:85727051675">
+  
+  <!-- Searchable NamaBPR -->
+  <div class="searchable-select">
+    <input type="text" id="NamaBPRInput" placeholder="Cari dan pilih NamaBPR..." autocomplete="off" required>
+    <input type="hidden" name="NamaBPR" id="NamaBPRHidden">
+    <div class="dropdown-list" id="BPRDropdown"></div>
+  </div>
+
+  <select name="AnggotaApex" required>
+    <option value="">-- AnggotaApex --</option>
+    <option>Anggota Apex</option>
+    <option>Tidak Anggota Apex</option>
+  </select>
+
+  <input name="ContactNama" placeholder="Contact Person (Nama)">
+  <input type="tel" name="ContactNoWA" placeholder="Contact Person (NoWA), contoh:85727051675">
+
+  <!-- Message Containers -->
+  <div id="successMessage" class="message success">✅ Data berhasil dikirim!</div>
+  <div id="errorMessage" class="message error">❌ Terjadi kesalahan saat mengirim data!</div>
+
+  <button type="submit">Kirim</button>
+  <div id="loadingBar"><div id="progressBar"></div></div>
+</form>
+
+<script>
+  // Data NamaBPR
+  const bprList = [
+    "PT. BPR Soka Panca Artha",
+    "PT. BPR Gunung Simping Artha",
+    "PT. BPR Mitra Gema Mandiri",
+    "PT. BPR Dana Mitra Sakti",
+    "PT. BPR Tirta Danarta",
+    "PT. BPR BKK Purwokerto (Perseroda)",
+    "PT. BPR DP Taspen Jateng",
+    "PT. BPR Eleska Artha",
+    "PT. BPR Surya Yudhakencana",
+    "PT. BPR BKK Mandiraja (Perseroda)",
+    "PD. BPR Artha Perwira ",
+    "PT. BPR BKK Purbalingga (Perseroda)",
+    "PT. BPR Buana Artha Kassiti",
+    "PT. BPR Gunung Slamet",
+    "PT. BPR Banyu Artha Citra",
+    "PT. BPR Citanduy Artha",
+    "PT. BPRS Bangun Arta ",
+    "PT. BPR BKK Cilacap (Perseroda) ",
+    "PT. BPR Ukabima Sejahtera",
+    "PT. BPR Artha Rahayu",
+    "PT. BPRS Gunung Slamet",
+    "Perumda BPR Bank Magelang",
+    "PT. BPR Mertoyudan Makmur",
+    "PT. BPR Mitra",
+    "PD. BPR BKK Kota Magelang",
+    "PT. BPR Sinar Garuda Prima",
+    "PD. BPR Bapas 69",
+    "PT. BPR Artha Mertoyudan",
+    "PT. BPR Mulyo Lumintu ",
+    "PT. BPR Hidup Artha Graha",
+    "PT. BPR Kembang Parama",
+    "PT. BPR Lumbung Artha Muntilanindo",
+    "PT. BPR Sejahtera",
+    "PT. BPR Danarakyat Sentosa",
+    "PT. BPR Prima Mertoyudan Sejahtera",
+    "PT. BPR BKK Muntilan (Perseroda)",
+    "PT. BPR Artha Sambhara",
+    "PT. BPR Niji",
+    "PD. BPR Bank Pasar Kab. Temanggung",
+    "PT. BPR Multi Arthanusa",
+    "PT. BPR Kusuma Sumbing",
+    "PT. BPR Kedu Artha Setia",
+    "PT. BPR Surya Kusuma Kranggan",
+    "PD. BPR BKK Temanggung ",
+    "PT. BPR Artha Selomanik Putra",
+    "PT. BPR Surya Yudha Wonosobo",
+    "PD. BPR Bank Wonosobo",
+    "PD. BPR BKK Wonosobo",
+    "PD. BPR BKK Purworejo",
+    "PT. BPR BKK Kebumen (Perseroda)",
+    "PD. BPR Bank Kebumen",
+    "PT. BPR Araya Arta",
+    "PT. BPR Sinararta Sejahtera",
+    "PT. BPR Dana Mitra Sejahtera",
+    "PT. BPR Bank Boyolali (Perseroda)",
+    "PT. BPR Nusamba Ampel",
+    "PT. BPR Mitra Pandanaran Mandiri",
+    "PT. BPR Guna Daya",
+    "PD. BPR BKK Boyolali",
+    "PT. BPR Arthayasa Ageng",
+    "PD. BPR Bank Solo",
+    "PT. BPR Sukadana",
+    "PT. BPR Sabar Artha Prima",
+    "PT. BPR Dana Utama",
+    "PT. BPR Adipura Santosa",
+    "PT. BPR Rejeki Insani",
+    "PT. BPR Bina Langgeng Mulia",
+    "PT. BPR Sukadya Rindang",
+    "PT. BPR Suryamas",
+    "PT. BPR Central International",
+    "PT. BPR Lestari Jateng",
+    "PT. BPR Buana Artha Lestari",
+    "PT. BPRS Hikmah Khazanah",
+    "PT. BPR BKK Wonogiri (Perseroda)",
+    "PD. BPR Giri Sukadana",
+    "PT. BPR Gajah Mungkur",
+    "PT. BPR Antar Rumeksa Arta",
+    "PT. BPR Bina Sejahtera Insani",
+    "PUD. BPR Bank Karanganyar",
+    "PD. BPR BKK Tasikmadu",
+    "PT. BPR Cita Dewi",
+    "PT. BPR Kandimadu Artha",
+    "PT. BPR Lawu Artha",
+    "PT. BPR Arta Mas Surakarta",
+    "PD. BPR Bank Daerah Karanganyar",
+    "PT. BPR Pura Arthakencana",
+    "PT. BPR Trihasta Prasodjo",
+    "PD. BPR Djoko Tingkir",
+    "PT. BPR BKK Karangmalang (Perseroda)",
+    "PT. BPR Artha Moro",
+    "PT. BPR Sumber Arta ",
+    "PT. BPR Mitra Banaran Mandiri",
+    "PT. BPR Arthareksa Sejahtera",
+    "PT. BPR Bank Klaten (Perseroda)",
+    "PT. BPR Delanggu Raya",
+    "PT. BPR Bhakti Riyadi",
+    "PT. BPR Shinta Bhakti Wedi",
+    "PT. BPR Danamas Pratama",
+    "Koperasi BPR Patma",
+    "PT. BPR Ukabima BMMS",
+    "PT. BPR Ceper ",
+    "PD. BPR BKK Tulung",
+    "PT. BPR Wuni Artha Utama",
+    "PT. BPR Restu Artha Abadi",
+    "PT. BPR Klaten Sejahtera",
+    "PT. BPR Gunung Mas",
+    "PT. BPR Hardi Mas Mandiri",
+    "PT. BPR Bank Sukoharjo",
+    "PT. BPR BKK Grogol (Perseroda)",
+    "PT. BPR Jadimanunggal Abadi",
+    "PT. BPR Artha Sari Sentosa",
+    "PT. BPR Wira Ardana Sejahtera",
+    "PT. BPR Bekonang",
+    "PT. BPR Solobaru Permai",
+    "PT. BPR Grogol Joyo",
+    "PT. BPR Sami Makmur",
+    "PT. BPR Kartadhani Mulya",
+    "PT. BPR Kartasura Makmur",
+    "PT. BPR Ihuthan Ganda",
+    "PT. BPR Sinarguna Sejahtera",
+    "PT. BPR Kartasura Saribumi",
+    "PT. BPR Surya Utama",
+    "PT. BPR Gunung Kawi",
+    "PT. BPR Setia Karib Abadi",
+    "PT. BPRS Kedung Arto",
+    "PT. BPR Gunung Merbabu",
+    "PT. BPR Weleri Makmur",
+    "PT. BPR Gunung Kinibalu",
+    "PT. BPR Rudo Indobank",
+    "PD. BPR BKK Kota Semarang",
+    "PT. BPR Gunung Rizki Pusaka Utama",
+    "PT. BPR Mandiri Artha Abadi",
+    "PD. BPR Bank Pasar Kota Semarang",
+    "PT. BPR Restu Artha Makmur",
+    "PT. BPR Modern Express Jateng",
+    "PT. BPR Adil Jaya Artha",
+    "PT. BPR Estetika Artha Guna",
+    "PT. BPR Artha Tanah Mas",
+    "PT. BPR Artha Mukti Santosa",
+    "PT. BPR Arto Moro",
+    "PT. BPR Pollux",
+    "PT. BPR Agung Sejahtera",
+    "PT. BPR Jateng",
+    "PT. BPR Karticentra Artha",
+    "PT. BPR Muncul Artha Sejahtera",
+    "PT. BPR Guru Jateng",
+    "PT. BPR Sinar Mitra Sejahtera",
+    "PT. BPRS Mitra Harmoni Kota Semarang",
+    "PT. BPR Dana Aman Tiara Abadi",
+    "PT. BPR BKK Jateng (Perseroda)",
+    "PT. BPR BKK Ungaran (Perseroda)",
+    "PT. BPR Mitra Mulia Persada",
+    "PT. BPR Mekar Nugraha ",
+    "PT. BPR Argo Dana Ungaran",
+    "PT. BPR Restu Klepu Makmur",
+    "PT. BPR Satria Pertiwi Semarang",
+    "PT. BPR Klepu Mitra Kencana ",
+    "PT. BPR Pratama Dana Abadi",
+    "PT. BPR Persada Ganda",
+    "PT. BPR Hartasarana",
+    "PT. BPR Dana Mitra Sentosa",
+    "PT. BPR Inti Ambarawa Sejahtera",
+    "PT. BPR Ambarawa Persada",
+    "PT. BPR Nusamba Cepiring",
+    "PT. BPR Arthama Cerah",
+    "PT. BPR Citra Darian",
+    "PT. BPR Weleri Jayapersada",
+    "PT. BPR Kendali Artha ",
+    "PT. BPR Dhanatani Cepiring",
+    "PT. BPR Artha Kaliwungu",
+    "PT. BPR Enggal Makmur Adi Santoso",
+    "PT. BPR Pasar Boja",
+    "PT. BPR Anugerah Harta Kaliwungu",
+    "PT. BPR BKK Kendal (Perseroda)",
+    "PT. BPR Arthanugraha Makmursejahtera",
+    "PT. BPR Artamas",
+    "PT. BPR Restu Mranggen Makmur",
+    "PT. BPR Mranggen Mitra Persada",
+    "PT. BPR Artha Mranggenjaya",
+    "PT. BPR Artha Nusantara Abadi",
+    "PD. BPR BKK Demak",
+    "PT. BPR Kridaharta Salatiga",
+    "PT. BPR Dinamika Bangun Arta",
+    "Perumda BPR Bank Salatiga",
+    "PT. BPR Satya Artha ",
+    "PT. BPR Dhana Mitratama, Blora",
+    "PT. BPR Dutabhakti Insani",
+    "PT. BPR BKK Blora",
+    "Perumda BPR Bank Blora Artha",
+    "PT. BPR Sungkunandhana",
+    "PT. BPR Artha Huda Abadi",
+    "PT. BPR Artaperdana Deltasentosa",
+    "PT. BPR Juwana Artha Sentosa",
+    "PT. BPR Tayu Duta Persada",
+    "PD. BPR BKK Pati",
+    "PT. BPR Asabahana Sejahtera",
+    "PT. BPR Koperasi Wedarijaksa",
+    "PT. BPR Bank Daerah Pati",
+    "PT. BPR Mitra Pati Mandiri",
+    "PT. BPR Syariah Artha Mas Abadi",
+    "PT. BPR BKK Jepara (Perseroda)",
+    "PT. BPR Nusamba Pecangaan",
+    "PT. BPR Hartha Muriatama",
+    "PT. BPR Taruna Adidaya Santosa",
+    "PT. BPR Mitra Budikusuma Mandiri",
+    "PD. BPR BKK Kudus",
+    "PD. BPR Bank Pasar Kabupaten Kudus",
+    "PT. BPR Catur Artha Jaya",
+    "PD. BPR BKK Lasem",
+    "PT. BPR Bank Rembang",
+    "PD. BPR Bank Purwa Artha",
+    "PT. BPR BKK Purwodadi (Perseroda)",
+    "PT. BPR Semeru",
+    "PT. BPR Wirosari Ijo",
+    "PT. BPR BKK Kab. Pekalongan (Perseroda)",
+    "PT. BPR Bank Pekalongan (Perseroda)",
+    "PT. BPR Sejahtera Artha Sembada",
+    "PD. BPR BKK Kota Pekalongan",
+    "PD. BPR BKK Taman Kabupaten Pemalang",
+    "PT. BPR Bank Pemalang (Perseroda)",
+    "PT. BPR Panasayu Arthalayan Sejahtera",
+    "PT. BPR Hidup Artha Putra",
+    "PT. BPR BKK Batang (Perseroda) ",
+    "PT. BPR Pemberdayaan Ekonomi Rakyat",
+    "PT. BPR Arta Utama",
+    "PD. BPR BKK Kota Tegal",
+    "PD. BPR Bank Pasar Kota Tegal",
+    "PT. BPR Central Artha ",
+    "PT. BPRS Hikmah Bahari",
+    "PT. BPR Arthapuspa Mega",
+    "PT. BPR Arismentari Ayu",
+    "PT. BPR Dhana Adiwerna",
+    "PT. BPR Nusamba Adiwerna",
+    "PT. BPR Sahabat Tata",
+    "PT. BPR Bumi Sediaguna",
+    "PT. BPR Nusumma Jateng",
+    "PT. BPR Artha Kramat",
+    "PT. BPR Mega Artha Mustika",
+    "PT. BPR BKK Kabupaten Tegal (Perseroda) ",
+    "PT. BPR Bank Tegal Gotong Royong",
+    "PT. BPR Bumiayu Bangun Citra",
+    "Perumda BPR Bank Brebes",
+    "PT. BPR Arisma Mandiri",
+    "PT. BPR Muhadi Setia Budi",
+    "PD. BPR BKK Banjarharjo"
+  ];
+
+  // Searchable Dropdown Logic
+  const namaBPRInput = document.getElementById('NamaBPRInput');
+  const namaBPRHidden = document.getElementById('NamaBPRHidden');
+  const dropdown = document.getElementById('BPRDropdown');
+  
+  function renderDropdown(filter = '') {
+    dropdown.innerHTML = '';
+    const filtered = bprList.filter(item => 
+      item.toLowerCase().includes(filter.toLowerCase())
+    );
+    
+    if (filtered.length === 0) {
+      const div = document.createElement('div');
+      div.className = 'dropdown-item no-result';
+      div.textContent = 'Tidak ada hasil';
+      dropdown.appendChild(div);
+    } else {
+      filtered.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'dropdown-item';
+        div.textContent = item;
+        div.onclick = () => {
+          namaBPRInput.value = item;
+          namaBPRHidden.value = item;
+          dropdown.classList.remove('active');
+        };
+        dropdown.appendChild(div);
+      });
+    }
+  }
+  
+  namaBPRInput.addEventListener('focus', () => {
+    renderDropdown(namaBPRInput.value);
+    dropdown.classList.add('active');
+  });
+  
+  namaBPRInput.addEventListener('input', (e) => {
+    renderDropdown(e.target.value);
+    dropdown.classList.add('active');
+    // Reset hidden input saat mengetik manual
+    namaBPRHidden.value = e.target.value;
+  });
+  
+  // Tutup dropdown saat klik di luar
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.searchable-select')) {
+      dropdown.classList.remove('active');
+    }
+  });
+
+  // Form Submit Logic
+  const scriptURL = 'https://script.google.com/macros/s/AKfycbzSH0S0_hDqSlP1n-C0FEt0BSTYjjMip64OQYUKItIfQsFBMk0SdtPHuKEOnrBR5W5x/exec';
+  const form = document.getElementById('Form');
+  const loadingBar = document.getElementById('loadingBar');
+  const progressBar = document.getElementById('progressBar');
+  const successMsg = document.getElementById('successMessage');
+  const errorMsg = document.getElementById('errorMessage');
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    
+    // Sembunyikan pesan sebelumnya
+    successMsg.style.display = 'none';
+    errorMsg.style.display = 'none';
+    
+    loadingBar.style.display = 'block';
+    progressBar.style.width = '30%';
+    
+    fetch(scriptURL, { method: 'POST', body: new FormData(form) })
+      .then(() => {
+        progressBar.style.width = '100%';
+        setTimeout(() => {
+          loadingBar.style.display = 'none';
+          progressBar.style.width = '0%';
+          successMsg.style.display = 'block';
+          form.reset();
+          namaBPRHidden.value = '';
+          
+          // Hilangkan pesan setelah 5 detik
+          setTimeout(() => {
+            successMsg.style.display = 'none';
+          }, 5000);
+        }, 300);
+      })
+      .catch(() => {
+        loadingBar.style.display = 'none';
+        progressBar.style.width = '0%';
+        errorMsg.style.display = 'block';
+        
+        // Hilangkan pesan setelah 5 detik
+        setTimeout(() => {
+          errorMsg.style.display = 'none';
+        }, 5000);
+      });
+  });
+</script>
+</body>
+</html>
