@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Registrasi Webinar – Sparkassenstiftung & Perbarindo DPD Jateng</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  :root {
+    --gold: #b8860b;
+    --gold-light: #f5e6b8;
+    --gold-mid: #d4a017;
+    --gold-border: rgba(184,134,11,0.25);
+    --bg: #f5f2ec;
+    --surface: #ffffff;
+    --surface2: #f8f6f1;
+    --text: #1a1611;
+    --text2: #3d3529;
+    --muted: #7a6e60;
+    --err: #c0392b;
+    --radius: 8px;
+    --border: rgba(0,0,0,0.1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    background-image:
+      radial-gradient(ellipse 80% 60% at 80% -10%, rgba(212,160,23,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at -10% 90%, rgba(184,134,11,0.07) 0%, transparent 60%);
+  }
+
+  .wrap {
+    width: 100%;
+    max-width: 540px;
+    padding: 1.1rem 1rem 1.8rem;
+    position: relative;
+  }
+
+  /* ── HEADER ── */
+  .hd { margin-bottom: 0.6rem; animation: up 0.5s ease both; }
+
+  .badge-row {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 0.35rem;
+    flex-wrap: wrap;
+  }
+
+  .pill {
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold);
+    background: var(--gold-light);
+    border: 1px solid var(--gold-border);
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+  }
+
+  .dot { width: 3px; height: 3px; border-radius: 50%; background: var(--muted); flex-shrink: 0; }
+
+  .org { font-size: 0.63rem; color: var(--muted); font-weight: 500; }
+
+  h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(1.05rem, 3vw, 1.3rem);
+    font-weight: 400;
+    line-height: 1.25;
+    color: var(--text);
+    margin-bottom: 0.05rem;
+  }
+
+  .h1-sub {
+    font-size: clamp(0.75rem, 2.5vw, 0.88rem);
+    font-weight: 500;
+    color: var(--text2);
+    line-height: 1.35;
+    margin-bottom: 0.3rem;
+  }
+
+  .open-label {
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: var(--gold-mid);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.45rem;
+  }
+
+  .tags { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+
+  .tag {
+    font-size: 0.62rem;
+    color: var(--text2);
+    background: rgba(184,134,11,0.08);
+    border: 1px solid var(--gold-border);
+    padding: 0.18rem 0.55rem;
+    border-radius: 5px;
+    font-weight: 500;
+  }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1rem 1.2rem 1.2rem;
+    margin-top: 0.6rem;
+    animation: up 0.5s 0.1s ease both;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.07), 0 1px 3px rgba(0,0,0,0.05);
+  }
+
+  .section-label {
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.55rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 0.6rem; }
+
+  .fg { margin-bottom: 0.5rem; }
+
+  label {
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+    font-size: 0.63rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.2rem;
+  }
+
+  label .req { color: var(--err); font-size: 0.75rem; line-height: 1; }
+
+  input, select {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.42rem 0.75rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.77rem;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
+    -webkit-appearance: none;
+  }
+
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%237a6e60' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.8rem center;
+    padding-right: 2.2rem;
+    cursor: pointer;
+  }
+
+  select option { background: #fff; color: var(--text); }
+
+  input:focus, select:focus {
+    border-color: var(--gold-mid);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(212,160,23,0.12);
+  }
+
+  input::placeholder { color: var(--muted); opacity: 0.5; font-size: 0.76rem; }
+
+  .hint { font-size: 0.6rem; color: var(--muted); margin-top: 0.15rem; }
+
+  .err-msg {
+    display: none;
+    font-size: 0.6rem;
+    color: var(--err);
+    margin-top: 0.12rem;
+    font-weight: 500;
+  }
+
+  .fg.error input,
+  .fg.error select { border-color: var(--err); background: #fff5f5; }
+  .fg.error .err-msg { display: block; }
+
+  .manual-wrap { display: none; margin-top: 0.45rem; }
+  .manual-wrap.show { display: block; }
+  .manual-wrap input { font-size: 0.76rem; }
+  .manual-hint { font-size: 0.61rem; color: var(--muted); margin-top: 0.2rem; font-style: italic; }
+
+  .sep { height: 1px; background: var(--border); margin: 0.5rem 0; }
+
+  .btn {
+    width: 100%;
+    margin-top: 0.6rem;
+    padding: 0.65rem;
+    background: linear-gradient(135deg, #c8920a 0%, #e8ab12 50%, #c8920a 100%);
+    background-size: 200% 100%;
+    border: none;
+    border-radius: var(--radius);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: background-position 0.3s, filter 0.18s, transform 0.12s, box-shadow 0.18s;
+    box-shadow: 0 2px 12px rgba(184,134,11,0.35);
+  }
+
+  .btn:hover { background-position: 100% 0; transform: translateY(-1px); box-shadow: 0 4px 20px rgba(184,134,11,0.4); }
+  .btn:active { transform: translateY(0); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  .spinner {
+    display: none;
+    width: 14px; height: 14px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.55s linear infinite;
+    margin: 0 auto;
+  }
+  .btn.loading .btn-text { display: none; }
+  .btn.loading .spinner { display: inline-block; }
+
+  .privacy { text-align: center; font-size: 0.6rem; color: var(--muted); margin-top: 0.6rem; }
+
+  /* ── SUCCESS OVERLAY ── */
+  .overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(30,24,16,0.72);
+    backdrop-filter: blur(6px);
+    z-index: 99;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    overflow-y: auto;
+  }
+  .overlay.show { display: flex; animation: fi 0.3s ease; }
+
+  .scard {
+    background: var(--surface);
+    border: 1.5px solid var(--gold-border);
+    border-radius: 18px;
+    padding: 1.6rem 1.5rem 1.5rem;
+    text-align: center;
+    max-width: 420px;
+    width: 100%;
+    animation: sc 0.38s cubic-bezier(.22,.8,.3,1.1) both;
+    box-shadow: 0 12px 50px rgba(0,0,0,0.18);
+    position: relative;
+  }
+
+  /* decorative top bar */
+  .scard::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #c8920a, #f0c040, #c8920a);
+    border-radius: 18px 18px 0 0;
+  }
+
+  .sicon {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f5e6b8, #e8cb70);
+    border: 2px solid var(--gold-border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem;
+    margin: 0 auto 0.75rem;
+    box-shadow: 0 4px 14px rgba(184,134,11,0.2);
+  }
+
+  .scard h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.15rem;
+    font-weight: 400;
+    color: var(--gold);
+    margin-bottom: 0.2rem;
+  }
+
+  .scard .tagline {
+    font-size: 0.7rem;
+    color: var(--muted);
+    margin-bottom: 1rem;
+  }
+
+  /* ── DETAIL BOX ── */
+  .detail-box {
+    background: var(--surface2);
+    border: 1px solid var(--gold-border);
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
+    text-align: left;
+    margin-bottom: 0.85rem;
+  }
+
+  .detail-box .dlabel {
+    font-size: 0.55rem;
+    font-weight: 700;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--gold-mid);
+    margin-bottom: 0.5rem;
+  }
+
+  .detail-row {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.3rem;
+    font-size: 0.72rem;
+    line-height: 1.45;
+  }
+
+  .detail-row .dk {
+    color: var(--muted);
+    flex-shrink: 0;
+    min-width: 90px;
+    font-weight: 500;
+  }
+
+  .detail-row .dv {
+    color: var(--text);
+    font-weight: 600;
+    word-break: break-word;
+  }
+
+  .divider-line {
+    height: 1px;
+    background: var(--gold-border);
+    margin: 0.5rem 0;
+  }
+
+  /* zoom box */
+  .zoom-box {
+    background: linear-gradient(135deg, #fffbef, #fff8e1);
+    border: 1.5px solid rgba(212,160,23,0.4);
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.85rem;
+    text-align: left;
+  }
+
+  .zoom-box .zlabel {
+    font-size: 0.55rem;
+    font-weight: 700;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.45rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  .zoom-link {
+    display: block;
+    font-size: 0.68rem;
+    color: #1a73e8;
+    text-decoration: none;
+    word-break: break-all;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    padding: 0.3rem 0.5rem;
+    background: rgba(26,115,232,0.07);
+    border-radius: 5px;
+    border: 1px solid rgba(26,115,232,0.15);
+    transition: background 0.15s;
+  }
+  .zoom-link:hover { background: rgba(26,115,232,0.13); }
+
+  .zoom-meta {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+  }
+
+  .zoom-item {
+    font-size: 0.68rem;
+    color: var(--text2);
+  }
+
+  .zoom-item strong {
+    color: var(--text);
+    font-weight: 700;
+  }
+
+  /* ── BUTTONS ── */
+  .btn-row {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.25rem;
+  }
+
+  .btn-pdf {
+    flex: 1;
+    padding: 0.6rem 0.75rem;
+    background: linear-gradient(135deg, #c8920a 0%, #e8ab12 50%, #c8920a 100%);
+    background-size: 200% 100%;
+    border: none;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.76rem;
+    font-weight: 700;
+    color: #fff;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    transition: background-position 0.3s, transform 0.12s, box-shadow 0.18s;
+    box-shadow: 0 2px 10px rgba(184,134,11,0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+  }
+  .btn-pdf:hover { background-position: 100% 0; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(184,134,11,0.4); }
+
+  .btn-close {
+    padding: 0.6rem 1rem;
+    background: transparent;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .btn-close:hover { border-color: var(--gold-border); color: var(--gold); }
+
+  @keyframes up  { from { opacity:0; transform:translateY(12px);} to { opacity:1; transform:none; } }
+  @keyframes fi  { from { opacity:0; } to { opacity:1; } }
+  @keyframes sc  { from { opacity:0; transform:scale(0.9) translateY(20px); } to { opacity:1; transform:scale(1) translateY(0); } }
+  @keyframes spin { to { transform:rotate(360deg); } }
+
+  @media (max-width: 480px) {
+    .wrap { padding: 0.8rem 0.7rem 1.2rem; }
+    .card { padding: 0.85rem 0.9rem 1rem; }
+    .grid2 { grid-template-columns: 1fr; }
+    .btn-row { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <!-- HEADER -->
+  <div class="hd">
+    <div class="badge-row">
+      <span class="pill">Webinar Gratis</span>
+      <span class="dot"></span>
+      <span class="org">Sparkassenstiftung Germany × Perbarindo DPD Jateng</span>
+    </div>
+    <h1>Mengenal BPR &amp; Tips Memulai Karir di BPR</h1>
+    <p class="h1-sub">e-Learning Manajemen Keuangan &amp; Manajemen Utang</p>
+    <p class="open-label">Terbuka untuk Seluruh Mahasiswa</p>
+    <div class="tags">
+      <span class="tag">🏦 Mengenal BPR</span>
+      <span class="tag">💼 Karir di BPR</span>
+      <span class="tag">📊 Manajemen Keuangan</span>
+      <span class="tag">💳 Manajemen Utang</span>
+    </div>
+  </div>
+
+  <!-- FORM CARD -->
+  <div class="card">
+    <div class="section-label">Formulir Pendaftaran</div>
+    <form id="regForm" novalidate>
+
+      <div class="grid2">
+        <div class="fg" id="fg-nama">
+          <label>Nama Lengkap <span class="req">*</span></label>
+          <input type="text" id="nama" placeholder="Nama lengkap Anda" autocomplete="name">
+          <span class="err-msg">Nama wajib diisi (min. 2 karakter).</span>
+        </div>
+
+        <div class="fg" id="fg-email">
+          <label>Email Aktif <span class="req">*</span></label>
+          <input type="email" id="email" placeholder="nama@email.com" autocomplete="email">
+          <p class="hint">📩 Link webinar dikirim ke email ini.</p>
+          <span class="err-msg">Masukkan email yang valid.</span>
+        </div>
+      </div>
+
+      <div class="sep"></div>
+
+      <div class="fg" id="fg-univ">
+        <label>Universitas / Perguruan Tinggi <span class="req">*</span></label>
+        <select id="universitas-select" onchange="handleUnivChange(this)">
+          <option value="" disabled selected>— Pilih Perguruan Tinggi —</option>
+          <option value="Universitas Sebelas Maret Surakarta (UNS)">Universitas Sebelas Maret Surakarta (UNS)</option>
+          <option value="Universitas Stikubank Semarang (UNISBANK)">Universitas Stikubank Semarang (UNISBANK)</option>
+          <option value="Universitas Jendral Soedirman Purwokerto">Universitas Jendral Soedirman Purwokerto</option>
+          <option value="Universitas Wahid Hasyim Semarang">Universitas Wahid Hasyim Semarang</option>
+          <option value="Universitas YPPI Rembang">Universitas YPPI Rembang</option>
+          <option value="Universitas Bhamada Slawi">Universitas Bhamada Slawi</option>
+          <option value="Universitas Muhadi Setiabudi Brebes">Universitas Muhadi Setiabudi Brebes</option>
+          <option value="Universitas Tidar Magelang">Universitas Tidar Magelang</option>
+          <option value="Universitas Ngudi Waluyo Ungaran">Universitas Ngudi Waluyo Ungaran</option>
+          <option value="Universitas Muhammadiyah Magelang">Universitas Muhammadiyah Magelang</option>
+          <option value="Universitas Kristen Satya Wacana (UKSW) Salatiga">Universitas Kristen Satya Wacana (UKSW) Salatiga</option>
+          <option value="Universitas Muria Kudus">Universitas Muria Kudus</option>
+          <option value="Universitas BPD">Universitas BPD</option>
+          <option value="STIE Totalwin">STIE Totalwin</option>
+          <option value="Institut Teknologi dan Bisnis Semarang">Institut Teknologi dan Bisnis Semarang</option>
+          <option value="Universitas Islam Negeri Sunan Kudus">Universitas Islam Negeri Sunan Kudus</option>
+          <option value="Universitas Pancasakti Tegal">Universitas Pancasakti Tegal</option>
+          <option value="__manual__">Lainnya (ketik manual) ✏️</option>
+        </select>
+        <div class="manual-wrap" id="manual-univ-wrap">
+          <input type="text" id="universitas-manual" placeholder="Ketik nama perguruan tinggi Anda...">
+          <p class="manual-hint">Tidak ada di daftar? Ketik nama lengkap di atas.</p>
+        </div>
+        <span class="err-msg">Perguruan tinggi wajib dipilih atau diisi.</span>
+      </div>
+
+      <div class="grid2">
+        <div class="fg" id="fg-jurusan">
+          <label>Jurusan / Prodi <span class="req">*</span></label>
+          <input type="text" id="jurusan" placeholder="Contoh: Manajemen">
+          <span class="err-msg">Wajib diisi.</span>
+        </div>
+
+        <div class="fg" id="fg-semester">
+          <label>Semester <span class="req">*</span></label>
+          <select id="semester">
+            <option value="" disabled selected>— Pilih —</option>
+            <option value="1">Semester 1</option>
+            <option value="2">Semester 2</option>
+            <option value="3">Semester 3</option>
+            <option value="4">Semester 4</option>
+            <option value="5">Semester 5</option>
+            <option value="6">Semester 6</option>
+            <option value="7">Semester 7</option>
+            <option value="8">Semester 8</option>
+            <option value="9+">Semester 9+</option>
+          </select>
+          <span class="err-msg">Wajib dipilih.</span>
+        </div>
+      </div>
+
+      <button type="submit" class="btn" id="submitBtn">
+        <span class="btn-text">Daftar Sekarang →</span>
+        <span class="spinner"></span>
+      </button>
+
+      <p class="privacy">🔒 Data Anda aman dan hanya digunakan untuk keperluan webinar ini.</p>
+    </form>
+  </div>
+</div>
+
+<!-- ── SUCCESS OVERLAY ── -->
+<div class="overlay" id="overlay">
+  <div class="scard">
+    <div class="sicon">✓</div>
+    <h2>Pendaftaran Berhasil!</h2>
+    <p class="tagline">Anda telah terdaftar sebagai peserta webinar gratis ini.</p>
+
+    <!-- Data Peserta -->
+    <div class="detail-box">
+      <div class="dlabel">📋 Data Peserta</div>
+      <div class="detail-row"><span class="dk">Nama</span><span class="dv" id="s-nama">—</span></div>
+      <div class="detail-row"><span class="dk">Email</span><span class="dv" id="s-email">—</span></div>
+      <div class="detail-row"><span class="dk">Universitas</span><span class="dv" id="s-univ">—</span></div>
+      <div class="detail-row"><span class="dk">Jurusan</span><span class="dv" id="s-jurusan">—</span></div>
+      <div class="detail-row"><span class="dk">Semester</span><span class="dv" id="s-semester">—</span></div>
+
+      <div class="divider-line"></div>
+
+      <div class="dlabel">🎓 Detail Webinar</div>
+      <div class="detail-row"><span class="dk">Penyelenggara</span><span class="dv">Sparkassenstiftung Germany &amp; Perbarindo DPD Jateng</span></div>
+      <div class="detail-row"><span class="dk">Tema</span><span class="dv">Mengenal BPR &amp; Tips Memulai Karir di BPR</span></div>
+      <div class="detail-row"><span class="dk">Materi</span><span class="dv">e-Learning Manajemen Keuangan &amp; Manajemen Utang</span></div>
+      <div class="detail-row"><span class="dk">Tanggal</span><span class="dv">05 Maret 2026</span></div>
+      <div class="detail-row"><span class="dk">Platform</span><span class="dv">Zoom</span></div>
+    </div>
+
+    <!-- Zoom Info -->
+    <div class="zoom-box">
+      <div class="zlabel">🎥 Akses Zoom</div>
+      <a class="zoom-link" href="https://us06web.zoom.us/j/89840716403?pwd=dWlNi9cRcZoaYmXXYokv0fiAeLA3RR.1" target="_blank" rel="noopener">
+        https://us06web.zoom.us/j/89840716403?pwd=dWlNi9cRcZoaYmXXYokv0fiAeLA3RR.1
+      </a>
+      <div class="zoom-meta">
+        <div class="zoom-item">Meeting ID: <strong>898 4071 6403</strong></div>
+        <div class="zoom-item">Passcode: <strong>800650</strong></div>
+      </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="btn-row">
+      <button class="btn-pdf" onclick="downloadPDF()">
+        ⬇ Download PDF Konfirmasi
+      </button>
+      <button class="btn-close" onclick="document.getElementById('overlay').classList.remove('show')">
+        Tutup
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+const GAS_URL = "https://script.google.com/macros/s/AKfycbz_xDFaUvnSQtFo7eeFk3t0vPDyyRU0VUob9aMgxC4z36UUKvkLm83PYO9CB8XRfwoe/exec";
+
+// Store submitted data globally for PDF
+let submittedData = {};
+
+function handleUnivChange(sel) {
+  const wrap = document.getElementById("manual-univ-wrap");
+  if (sel.value === "__manual__") {
+    wrap.classList.add("show");
+    document.getElementById("universitas-manual").focus();
+  } else {
+    wrap.classList.remove("show");
+    document.getElementById("universitas-manual").value = "";
+  }
+  validateField("univ");
+}
+
+function getUnivValue() {
+  const sel = document.getElementById("universitas-select").value;
+  if (sel === "__manual__") return document.getElementById("universitas-manual").value.trim();
+  return sel;
+}
+
+function validateField(name) {
+  const map = {
+    nama:     { el: document.getElementById("nama"),     fg: "fg-nama",     ok: v => v.trim().length >= 2 },
+    email:    { el: document.getElementById("email"),    fg: "fg-email",    ok: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()) },
+    univ:     { el: null,                                fg: "fg-univ",     ok: () => getUnivValue().length >= 2 },
+    jurusan:  { el: document.getElementById("jurusan"), fg: "fg-jurusan",  ok: v => v.trim().length >= 2 },
+    semester: { el: document.getElementById("semester"),fg: "fg-semester", ok: v => v !== "" },
+  };
+  const f = map[name];
+  const v = f.el ? f.el.value : "";
+  const pass = f.ok(v);
+  document.getElementById(f.fg).classList.toggle("error", !pass);
+  return pass;
+}
+
+function validate() {
+  return ["nama","email","univ","jurusan","semester"].map(validateField).every(Boolean);
+}
+
+["nama","email","jurusan"].forEach(id =>
+  document.getElementById(id).addEventListener("blur", () => validateField(id))
+);
+document.getElementById("semester").addEventListener("change", () => validateField("semester"));
+document.getElementById("universitas-manual").addEventListener("blur", () => validateField("univ"));
+
+document.getElementById("regForm").addEventListener("submit", function(e) {
+  e.preventDefault();
+  if (!validate()) return;
+
+  const btn = document.getElementById("submitBtn");
+  btn.classList.add("loading");
+  btn.disabled = true;
+
+  const payload = {
+    timestamp:   new Date().toLocaleString("id-ID", { timeZone: "Asia/Jakarta" }),
+    nama:        document.getElementById("nama").value.trim(),
+    email:       document.getElementById("email").value.trim(),
+    universitas: getUnivValue(),
+    jurusan:     document.getElementById("jurusan").value.trim(),
+    semester:    document.getElementById("semester").value,
+  };
+
+  // Save for PDF immediately
+  submittedData = payload;
+
+  // Populate overlay immediately (don't wait for network)
+  document.getElementById("s-nama").textContent     = payload.nama;
+  document.getElementById("s-email").textContent    = payload.email;
+  document.getElementById("s-univ").textContent     = payload.universitas;
+  document.getElementById("s-jurusan").textContent  = payload.jurusan;
+  document.getElementById("s-semester").textContent = "Semester " + payload.semester;
+
+  // Show success overlay right away
+  document.getElementById("overlay").classList.add("show");
+  btn.classList.remove("loading");
+  btn.disabled = false;
+
+  // Send data to GAS in background (fire and forget)
+  try {
+    // Method 1: fetch with no-cors
+    fetch(GAS_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain" },
+      body: JSON.stringify(payload),
+    }).catch(function() {});
+
+    // Method 2: also send via GET as fallback (image beacon)
+    const params = new URLSearchParams({
+      timestamp:   payload.timestamp,
+      nama:        payload.nama,
+      email:       payload.email,
+      universitas: payload.universitas,
+      jurusan:     payload.jurusan,
+      semester:    payload.semester,
+    });
+    new Image().src = GAS_URL + "?" + params.toString();
+  } catch(err) {
+    // Silent fail - data already shown to user
+    console.warn("GAS send error:", err);
+  }
+});
+
+/* ── PDF GENERATOR ── */
+function downloadPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: "mm", format: "a4" });
+
+  const gold    = [184, 134, 11];
+  const goldMid = [212, 160, 23];
+  const dark    = [26, 22, 17];
+  const muted   = [122, 110, 96];
+  const light   = [245, 242, 236];
+  const white   = [255, 255, 255];
+
+  const W = 210;
+  const margin = 20;
+
+  /* ── TOP GOLD BAR ── */
+  doc.setFillColor(...goldMid);
+  doc.rect(0, 0, W, 7, "F");
+
+  /* ── HEADER BG ── */
+  doc.setFillColor(...light);
+  doc.rect(0, 7, W, 38, "F");
+
+  /* ── TITLE BLOCK ── */
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(6);
+  doc.setTextColor(...gold);
+  doc.text("WEBINAR GRATIS  •  SPARKASSENSTIFTUNG GERMANY & PERBARINDO DPD JATENG", margin, 16);
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(14);
+  doc.setTextColor(...dark);
+  doc.text("Mengenal BPR & Tips Memulai Karir di BPR", margin, 24);
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(9);
+  doc.setTextColor(...muted);
+  doc.text("e-Learning Manajemen Keuangan & Manajemen Utang", margin, 30);
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(8);
+  doc.setTextColor(...gold);
+  doc.text("05 Maret 2026  •  via Zoom", margin, 37);
+
+  /* ── BADGE: PESERTA TERDAFTAR ── */
+  doc.setFillColor(...gold);
+  doc.roundedRect(W - 70, 12, 50, 14, 2, 2, "F");
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(7);
+  doc.setTextColor(...white);
+  doc.text("PESERTA TERDAFTAR", W - 45, 19, { align: "center" });
+  doc.setFontSize(6);
+  doc.setFont("helvetica", "normal");
+  doc.text("Webinar Gratis", W - 45, 23.5, { align: "center" });
+
+  /* ── SEPARATOR ── */
+  doc.setDrawColor(...goldMid);
+  doc.setLineWidth(0.4);
+  doc.line(margin, 48, W - margin, 48);
+
+  let y = 55;
+
+  /* ── SECTION: DATA PESERTA ── */
+  function sectionHeader(title, yPos) {
+    doc.setFillColor(245, 230, 184);
+    doc.roundedRect(margin, yPos - 4, W - margin * 2, 7, 1.5, 1.5, "F");
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(7);
+    doc.setTextColor(...gold);
+    doc.text(title, margin + 3, yPos + 0.5);
+    return yPos + 9;
+  }
+
+  function dataRow(key, value, yPos) {
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    doc.setTextColor(...muted);
+    doc.text(key, margin + 3, yPos);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(...dark);
+    // Handle long values
+    const maxW = W - margin * 2 - 55;
+    const lines = doc.splitTextToSize(value, maxW);
+    doc.text(lines, margin + 55, yPos);
+    return yPos + (lines.length > 1 ? lines.length * 5.5 + 1 : 7);
+  }
+
+  y = sectionHeader("DATA PESERTA", y);
+  y = dataRow("Nama Lengkap :", submittedData.nama || "-", y);
+  y = dataRow("Email :", submittedData.email || "-", y);
+  y = dataRow("Universitas :", submittedData.universitas || "-", y);
+  y = dataRow("Jurusan / Prodi :", submittedData.jurusan || "-", y);
+  y = dataRow("Semester :", "Semester " + (submittedData.semester || "-"), y);
+  y += 5;
+
+  /* ── SECTION: DETAIL WEBINAR ── */
+  y = sectionHeader("DETAIL WEBINAR", y);
+  y = dataRow("Penyelenggara :", "Sparkassenstiftung Germany & Perbarindo DPD Jateng", y);
+  y = dataRow("Tema :", "Mengenal BPR & Tips Memulai Karir di BPR", y);
+  y = dataRow("Materi :", "e-Learning Manajemen Keuangan & Manajemen Utang", y);
+  y = dataRow("Tanggal :", "05 Maret 2026", y);
+  y = dataRow("Platform :", "Zoom (Online)", y);
+  y += 5;
+
+  /* ── SECTION: AKSES ZOOM ── */
+  y = sectionHeader("AKSES ZOOM", y);
+
+  // Zoom link box
+  doc.setFillColor(230, 242, 255);
+  doc.roundedRect(margin, y - 1, W - margin * 2, 9, 1.5, 1.5, "F");
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(7.5);
+  doc.setTextColor(26, 115, 232);
+  doc.text("https://us06web.zoom.us/j/89840716403?pwd=dWlNi9cRcZoaYmXXYokv0fiAeLA3RR.1", margin + 3, y + 4.5);
+  y += 13;
+
+  // Meeting ID chip — putih bersih dengan border emas
+  doc.setFillColor(255, 255, 255);
+  doc.setDrawColor(184, 134, 11);
+  doc.setLineWidth(0.5);
+  doc.roundedRect(margin, y - 1, 78, 12, 2, 2, "FD");
+  // Label kecil
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(6.5);
+  doc.setTextColor(122, 110, 96);
+  doc.text("MEETING ID", margin + 4, y + 3.5);
+  // Nilai besar & gelap
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(10);
+  doc.setTextColor(26, 22, 17);
+  doc.text("898 4071 6403", margin + 4, y + 9);
+
+  // Passcode chip — background kuning muda supaya kontras
+  doc.setFillColor(255, 248, 220);
+  doc.setDrawColor(184, 134, 11);
+  doc.setLineWidth(0.5);
+  doc.roundedRect(margin + 83, y - 1, 55, 12, 2, 2, "FD");
+  // Label kecil
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(6.5);
+  doc.setTextColor(122, 110, 96);
+  doc.text("PASSCODE", margin + 87, y + 3.5);
+  // Nilai besar & gelap
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(10);
+  doc.setTextColor(26, 22, 17);
+  doc.text("800650", margin + 87, y + 9);
+
+  y += 17;
+
+  /* ── NOTICE ── */
+  doc.setFillColor(255, 251, 230);
+  doc.setDrawColor(...gold);
+  doc.setLineWidth(0.3);
+  doc.roundedRect(margin, y, W - margin * 2, 12, 2, 2, "FD");
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(7.5);
+  doc.setTextColor(...gold);
+  doc.text("ℹ  Informasi Penting", margin + 4, y + 5);
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(...muted);
+  doc.text("Simpan dokumen ini. Link webinar juga akan dikirim ke email Anda menjelang hari pelaksanaan.", margin + 4, y + 9.5);
+
+  y += 18;
+
+  /* ── FOOTER ── */
+  doc.setFillColor(...light);
+  doc.rect(0, 282, W, 15, "F");
+  doc.setDrawColor(...goldMid);
+  doc.setLineWidth(0.3);
+  doc.line(0, 282, W, 282);
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(6.5);
+  doc.setTextColor(...muted);
+  doc.text("Sparkassenstiftung Germany & Perbarindo DPD Jawa Tengah  •  Dokumen ini dibuat otomatis saat pendaftaran.", W / 2, 288, { align: "center" });
+  doc.text("Dicetak: " + new Date().toLocaleString("id-ID", { timeZone: "Asia/Jakarta" }), W / 2, 293, { align: "center" });
+
+  /* ── BOTTOM GOLD BAR ── */
+  doc.setFillColor(...goldMid);
+  doc.rect(0, 295, W, 2, "F");
+
+  const safeName = (submittedData.nama || "peserta").replace(/[^a-z0-9]/gi, "_");
+  doc.save("Konfirmasi_Webinar_BPR_" + safeName + ".pdf");
+}
+</script>
+</body>
+</html>
