@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Permohonan Relaksasi AYDA</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #f0ede8; --surface: #ffffff; --surface2: #f7f5f2;
+    --border: #d8d2c8; --border-focus: #1a4a6b;
+    --text: #1c1c1c; --text-muted: #6b6560;
+    --accent: #1a4a6b; --accent2: #c8440a;
+    --success: #1a6b3c; --success-bg: #f0faf5; --success-border: #c8e6d4;
+    --tag-bg: #e8f0f7;
+    --font: 'IBM Plex Sans', sans-serif;
+    --mono: 'IBM Plex Mono', monospace;
+    --fs: 11.5px; --fs-sm: 10.5px; --fs-xs: 9.5px;
+    --radius: 3px; --gap: 8px;
+  }
+  body { font-family: var(--font); font-size: var(--fs); background: var(--bg); color: var(--text); line-height: 1.5; min-height: 100vh; }
+
+  /* HEADER */
+  .header { background: var(--accent); color: #fff; padding: 10px 14px 8px; display: flex; align-items: flex-start; gap: 12px; position: sticky; top: 0; z-index: 100; border-bottom: 3px solid var(--accent2); }
+  .header-badge { background: var(--accent2); color: #fff; font-family: var(--mono); font-size: 9px; font-weight: 500; padding: 3px 6px; border-radius: 2px; white-space: nowrap; margin-top: 2px; letter-spacing: 0.5px; }
+  .header-title { flex: 1; }
+  .header-title h1 { font-size: 13.5px; font-weight: 600; letter-spacing: -0.3px; line-height: 1.2; }
+  .header-title p { font-size: 10px; opacity: 0.75; margin-top: 1px; }
+
+  .progress-bar { height: 2px; background: var(--border); position: sticky; top: 62px; z-index: 99; }
+  .progress-fill { height: 100%; background: var(--accent2); width: 0%; transition: width 0.4s ease; }
+
+  .main { padding: 10px 12px 14px; max-width: 100%; }
+
+  /* ===================== SUCCESS PANEL ===================== */
+  .success-panel {
+    display: none;
+    background: var(--surface);
+    border: 1px solid var(--success-border);
+    border-left: 4px solid var(--success);
+    border-radius: var(--radius);
+    margin-bottom: var(--gap);
+    overflow: hidden;
+    animation: fadeDown 0.3s ease;
+  }
+  .success-panel.show { display: block; }
+  @keyframes fadeDown { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
+
+  .sp-header {
+    background: var(--success-bg);
+    border-bottom: 1px solid var(--success-border);
+    padding: 9px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .sp-check {
+    width: 26px; height: 26px;
+    background: var(--success);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 13px; flex-shrink: 0;
+  }
+  .sp-head-text { flex: 1; }
+  .sp-head-text strong { display: block; font-size: 12.5px; color: var(--success); font-weight: 600; }
+  .sp-head-text span { font-size: var(--fs-xs); color: var(--text-muted); }
+  .sp-close-btn { background: none; border: none; color: var(--text-muted); font-size: 17px; cursor: pointer; padding: 3px 7px; border-radius: 2px; line-height: 1; }
+  .sp-close-btn:hover { color: var(--accent2); background: #fee8e2; }
+
+  .sp-body { padding: 10px 12px 12px; }
+
+  /* Laporan detail data */
+  .sp-report {
+    background: var(--success-bg);
+    border: 1px solid var(--success-border);
+    border-radius: var(--radius);
+    margin-bottom: 10px;
+    overflow: hidden;
+  }
+  .sp-report-title {
+    background: var(--success);
+    color: #fff;
+    padding: 5px 10px;
+    font-size: 9.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .sp-report-title span {
+    background: rgba(255,255,255,0.25);
+    border-radius: 2px;
+    padding: 1px 5px;
+    font-family: var(--mono);
+    font-size: 8.5px;
+    font-weight: 500;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  /* Grid laporan */
+  .sp-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+  }
+  .sp-grid-row {
+    display: contents;
+  }
+  .sp-cell {
+    padding: 5px 10px;
+    border-bottom: 1px solid var(--success-border);
+    border-right: 1px solid var(--success-border);
+    font-size: var(--fs-xs);
+  }
+  .sp-cell:nth-child(even) { border-right: none; }
+  .sp-cell.sp-full { grid-column: span 2; border-right: none; }
+  .sp-cell-label {
+    font-size: 8.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    letter-spacing: 0.3px;
+    margin-bottom: 2px;
+  }
+  .sp-cell-val {
+    font-family: var(--mono);
+    color: var(--accent);
+    font-weight: 500;
+  }
+  .sp-cell-val.text { font-family: var(--font); font-weight: 600; font-size: 11px; }
+  .sp-cell-val.pct { color: var(--accent2); }
+  .sp-cell-val.tag {
+    display: inline-block;
+    background: rgba(200,68,10,0.1);
+    color: var(--accent2);
+    border-radius: 2px;
+    padding: 1px 5px;
+    font-size: 9px;
+    font-family: var(--font);
+    font-weight: 500;
+    margin: 1px 2px 0 0;
+  }
+  .sp-cell-val.waktu-tag {
+    display: inline-block;
+    background: var(--tag-bg);
+    color: var(--accent);
+    border-radius: 2px;
+    padding: 1px 6px;
+    font-size: 9.5px;
+    font-family: var(--font);
+    font-weight: 600;
+  }
+  .sp-section-sep {
+    grid-column: span 2;
+    background: var(--success);
+    color: #fff;
+    font-size: 8.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    padding: 3px 10px;
+    opacity: 0.7;
+  }
+
+  /* Download area */
+  .sp-download {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    flex-wrap: wrap;
+  }
+  .sp-dl-text { flex: 1; }
+  .sp-dl-text strong { display: block; font-size: var(--fs-sm); color: var(--accent); margin-bottom: 1px; }
+  .sp-dl-text span { font-size: var(--fs-xs); color: var(--text-muted); }
+
+  /* ===================== SECTIONS ===================== */
+  .section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: var(--gap); overflow: hidden; transition: box-shadow 0.2s; }
+  .section:focus-within { box-shadow: 0 0 0 2px rgba(26,74,107,0.12); }
+  .section-header { background: var(--surface2); border-bottom: 1px solid var(--border); padding: 6px 10px; display: flex; align-items: center; gap: 7px; cursor: pointer; user-select: none; }
+  .section-num { font-family: var(--mono); font-size: var(--fs-xs); color: var(--accent); font-weight: 500; background: var(--tag-bg); padding: 1px 5px; border-radius: 2px; min-width: 22px; text-align: center; }
+  .section-title { font-size: var(--fs); font-weight: 600; color: var(--accent); flex: 1; letter-spacing: -0.2px; }
+  .section-optional-tag { font-size: 8.5px; background: rgba(107,101,96,0.15); color: var(--text-muted); border-radius: 2px; padding: 1px 5px; font-weight: 500; font-family: var(--mono); letter-spacing: 0.3px; }
+  .section-toggle { font-size: 10px; color: var(--text-muted); transition: transform 0.25s; }
+  .section-toggle.open { transform: rotate(180deg); }
+  .section-body { padding: 8px 10px; display: grid; gap: 6px; }
+  .section-body.collapsed { display: none; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .col-span-2 { grid-column: span 2; }
+
+  .field { display: flex; flex-direction: column; gap: 2px; }
+  .field label { font-size: var(--fs-xs); font-weight: 500; color: var(--text-muted); letter-spacing: 0.2px; text-transform: uppercase; }
+  .field label .req { color: var(--accent2); margin-left: 2px; }
+  .field label .opt { color: var(--text-muted); font-size: 8px; font-style: italic; text-transform: none; margin-left: 3px; opacity: 0.75; }
+
+  input[type="text"], input[type="number"], select, textarea {
+    font-family: var(--font); font-size: var(--fs); color: var(--text); background: var(--surface2);
+    border: 1px solid var(--border); border-radius: var(--radius); padding: 5px 7px; width: 100%;
+    outline: none; transition: border-color 0.15s, background 0.15s; -webkit-appearance: none;
+  }
+  input[type="number"] { font-family: var(--mono); }
+  input:focus, select:focus, textarea:focus { border-color: var(--border-focus); background: #fff; }
+  input.error { border-color: var(--accent2); }
+
+  .input-wrap { position: relative; }
+  .input-prefix, .input-suffix { position: absolute; top: 50%; transform: translateY(-50%); font-size: var(--fs-xs); color: var(--text-muted); font-family: var(--mono); pointer-events: none; }
+  .input-prefix { left: 7px; } .input-suffix { right: 7px; }
+  .has-prefix input { padding-left: 26px; } .has-suffix input { padding-right: 28px; }
+
+  .field-hint { font-size: var(--fs-xs); color: var(--text-muted); margin-top: 1px; font-style: italic; }
+  .field-error { font-size: var(--fs-xs); color: var(--accent2); margin-top: 2px; display: none; }
+  .field-error.show { display: block; }
+  .subsection-label { font-size: var(--fs-xs); font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 0.4px; padding: 2px 0; border-bottom: 1px solid var(--tag-bg); margin-bottom: 2px; }
+  .divider { height: 1px; background: var(--border); margin: 2px 0; }
+  .section-skip-note { background: #fffbf5; border: 1px dashed var(--border); border-radius: var(--radius); padding: 5px 9px; font-size: var(--fs-xs); color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
+  .total-row { background: var(--tag-bg); border: 1px solid var(--border-focus); border-radius: var(--radius); padding: 5px 9px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .total-row .total-label { font-size: var(--fs-xs); font-weight: 600; color: var(--accent); text-transform: uppercase; }
+  .total-row .total-value { font-family: var(--mono); font-size: var(--fs); font-weight: 600; color: var(--accent2); }
+
+  /* CHECKBOX */
+  .checkbox-group { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .checkbox-wrapper { display: flex; flex-direction: column; }
+  .checkbox-item { display: flex; align-items: center; gap: 6px; padding: 5px 8px; border: 1px solid var(--border); border-radius: var(--radius); cursor: pointer; transition: all 0.15s; background: var(--surface2); user-select: none; }
+  .checkbox-item:hover { background: var(--tag-bg); border-color: var(--accent); }
+  .checkbox-item input[type="checkbox"] { display: none; }
+  .checkbox-item .check-box { width: 13px; height: 13px; border: 1.5px solid var(--border); border-radius: 2px; background: #fff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
+  .checkbox-item.checked .check-box { background: var(--accent); border-color: var(--accent); }
+  .checkbox-item.checked .check-box::after { content: ''; width: 5px; height: 3px; border-left: 1.5px solid #fff; border-bottom: 1.5px solid #fff; transform: rotate(-45deg) translateY(-1px); display: block; }
+  .checkbox-item.checked { background: var(--tag-bg); border-color: var(--accent); border-bottom-left-radius: 0; border-bottom-right-radius: 0; border-bottom-color: transparent; }
+  .checkbox-label { font-size: var(--fs-sm); color: var(--text); }
+  .uraian-wrap { display: none; border: 1px solid var(--accent); border-top: none; border-bottom-left-radius: var(--radius); border-bottom-right-radius: var(--radius); background: #f0f5fa; padding: 5px 8px 6px; }
+  .uraian-wrap.show { display: block; }
+  .uraian-label { font-size: var(--fs-xs); font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 3px; display: flex; align-items: center; gap: 4px; }
+  .uraian-label::before { content: '↳'; font-size: 10px; opacity: 0.6; }
+  .uraian-label span.optional-tag { font-size: 8px; background: var(--text-muted); color: #fff; border-radius: 2px; padding: 1px 4px; font-weight: 400; text-transform: none; opacity: 0.75; }
+  .uraian-textarea { font-family: var(--font) !important; font-size: var(--fs-sm) !important; background: #fff !important; border: 1px solid var(--border) !important; border-radius: 2px !important; padding: 5px 7px !important; width: 100%; resize: vertical; min-height: 48px; line-height: 1.5; }
+  .uraian-textarea:focus { border-color: var(--border-focus) !important; outline: none; }
+  .uraian-textarea::placeholder { color: #aaa; font-style: italic; }
+  .uraian-charcount { font-size: 8.5px; color: var(--text-muted); text-align: right; margin-top: 2px; font-family: var(--mono); }
+
+  /* RADIO */
+  .radio-group { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+  .radio-item { display: flex; align-items: center; justify-content: center; gap: 5px; padding: 6px 8px; border: 1px solid var(--border); border-radius: var(--radius); cursor: pointer; transition: all 0.15s; background: var(--surface2); user-select: none; text-align: center; }
+  .radio-item:hover { background: var(--tag-bg); border-color: var(--accent); }
+  .radio-item input[type="radio"] { display: none; }
+  .radio-item.selected { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .radio-item.selected .radio-label { color: #fff; font-weight: 600; }
+  .radio-label { font-size: var(--fs-sm); }
+
+  /* AUTOCOMPLETE */
+  .autocomplete-wrap { position: relative; width: 100%; }
+  .autocomplete-input-row { display: flex; align-items: center; position: relative; }
+  .autocomplete-input-row input { padding-right: 54px; }
+  .ac-clear-btn { position: absolute; right: 28px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 13px; line-height: 1; padding: 2px 4px; display: none; z-index: 2; }
+  .ac-clear-btn:hover { color: var(--accent2); }
+  .ac-arrow { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); pointer-events: none; color: var(--text-muted); font-size: 9px; z-index: 2; transition: transform 0.2s; }
+  .ac-arrow.open { transform: translateY(-50%) rotate(180deg); }
+  .ac-dropdown { position: absolute; top: calc(100% + 3px); left: 0; right: 0; background: var(--surface); border: 1px solid var(--border-focus); border-radius: var(--radius); max-height: 220px; overflow-y: auto; z-index: 500; box-shadow: 0 4px 16px rgba(26,74,107,0.13); display: none; }
+  .ac-dropdown.show { display: block; }
+  .ac-item { padding: 6px 10px; font-size: var(--fs-sm); cursor: pointer; border-bottom: 1px solid var(--bg); transition: background 0.1s; }
+  .ac-item:last-child { border-bottom: none; }
+  .ac-item:hover, .ac-item.active { background: var(--tag-bg); color: var(--accent); }
+  .ac-item mark { background: transparent; color: var(--accent2); font-weight: 700; }
+  .ac-empty { padding: 7px 10px; font-size: var(--fs-xs); color: var(--text-muted); font-style: italic; }
+  .ac-manual-hint { padding: 6px 10px; font-size: var(--fs-xs); color: var(--accent); background: var(--tag-bg); border-top: 1px solid var(--border); }
+  .ac-count-badge { display: inline-block; font-family: var(--mono); font-size: 8.5px; background: var(--accent); color: #fff; border-radius: 2px; padding: 1px 4px; margin-left: 5px; vertical-align: middle; }
+  .ac-selected-badge { position: absolute; right: 28px; top: 50%; transform: translateY(-50%); font-size: 8px; background: var(--success); color: #fff; border-radius: 2px; padding: 1px 4px; font-family: var(--mono); pointer-events: none; display: none; }
+
+  /* BUTTONS */
+  .btn { font-family: var(--font); font-size: var(--fs); font-weight: 600; padding: 7px 16px; border: none; border-radius: var(--radius); cursor: pointer; transition: all 0.15s; display: inline-flex; align-items: center; gap: 5px; letter-spacing: 0.2px; }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: #153d5a; }
+  .btn-primary:disabled { background: #8fa8bc; cursor: not-allowed; }
+  .btn-secondary { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
+  .btn-secondary:hover { background: var(--surface2); color: var(--text); }
+  .btn-excel { background: var(--success); color: #fff; }
+  .btn-excel:hover { background: #155c31; }
+  .btn-pdf { background: #8b1a1a; color: #fff; }
+  .btn-pdf:hover { background: #6e1414; }
+
+  /* SUBMIT BAR */
+  .submit-area { position: sticky; bottom: 0; background: var(--surface); border-top: 1px solid var(--border); padding: 8px 12px; display: flex; gap: 8px; align-items: center; z-index: 90; }
+  .submit-info { flex: 1; font-size: var(--fs-xs); color: var(--text-muted); }
+
+  /* TOAST */
+  .status-toast { position: fixed; bottom: 60px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--success); color: #fff; font-size: var(--fs-sm); font-weight: 500; padding: 8px 16px; border-radius: 4px; opacity: 0; transition: all 0.3s; pointer-events: none; white-space: nowrap; z-index: 999; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+  .status-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .status-toast.error { background: var(--accent2); }
+
+  /* OVERLAY */
+  .overlay { display: none; position: fixed; inset: 0; background: rgba(240,237,232,0.8); z-index: 1000; align-items: center; justify-content: center; flex-direction: column; gap: 10px; }
+  .overlay.show { display: flex; }
+  .spinner { width: 28px; height: 28px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .overlay-text { font-size: var(--fs-sm); color: var(--accent); font-weight: 500; }
+
+  @media (max-width: 480px) {
+    .grid-2, .grid-4 { grid-template-columns: 1fr; }
+    .radio-group { grid-template-columns: repeat(2, 1fr); }
+    .checkbox-group { grid-template-columns: 1fr; }
+    .col-span-2 { grid-column: span 1; }
+    .sp-grid { grid-template-columns: 1fr; }
+    .sp-cell { border-right: none; }
+    .sp-cell.sp-full { grid-column: span 1; }
+    .sp-section-sep { grid-column: span 1; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-badge">BPR</div>
+  <div class="header-title">
+    <h1>Permohonan Relaksasi AYDA</h1>
+    <p>Agunan Yang Diambil Alih — Formulir Informasi BPR &nbsp;|&nbsp;
+      <span style="background:rgba(200,68,10,0.25);padding:1px 5px;border-radius:2px;font-weight:600;">Data posisi per 31 Desember 2025</span>
+    </p>
+  </div>
+</div>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<div class="main">
+
+  <!-- ===================== SUCCESS PANEL ===================== -->
+  <div class="success-panel" id="successPanel">
+    <div class="sp-header">
+      <div class="sp-check">✓</div>
+      <div class="sp-head-text">
+        <strong id="spTitle">Data berhasil disimpan ke Spreadsheet</strong>
+        <span id="spSub">Berikut ringkasan data yang baru saja Anda input. Silakan unduh untuk pengecekan.</span>
+      </div>
+      <button class="sp-close-btn" onclick="closePanel()" title="Tutup">✕</button>
+    </div>
+    <div class="sp-body">
+
+      <!-- LAPORAN DATA -->
+      <div class="sp-report">
+        <div class="sp-report-title">
+          📋 Laporan Data yang Diinput
+          <span id="spTimestamp"></span>
+        </div>
+        <div class="sp-grid" id="spGrid">
+          <!-- diisi oleh JS -->
+        </div>
+      </div>
+
+      <!-- DOWNLOAD -->
+      <div class="sp-download">
+        <div class="sp-dl-text">
+          <strong>⬇ Download untuk pengecekan</strong>
+          <span>Unduh laporan data yang baru saja Anda input.</span>
+        </div>
+        <button class="btn btn-pdf" onclick="downloadPDF()">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 13h6M9 17h4"/></svg>
+          Download PDF
+        </button>
+        <button class="btn btn-excel" onclick="downloadExcel()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          Download Excel
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===================== FORM ===================== -->
+  <form id="aydaForm" novalidate>
+
+    <!-- SECTION 01 -->
+    <div class="section">
+      <div class="section-header" onclick="toggleSection(this)">
+        <span class="section-num">01</span>
+        <span class="section-title">Identitas BPR &nbsp;<span style="font-size:9.5px;font-weight:400;color:#6b9bbf;font-family:var(--mono);">posisi 31 Des 2025</span></span>
+        <span class="section-toggle open">▼</span>
+      </div>
+      <div class="section-body">
+        <div class="grid-2">
+          <div class="field col-span-2">
+            <label>Nama BPR <span class="req">*</span></label>
+            <div class="autocomplete-wrap" id="acWrap">
+              <div class="autocomplete-input-row">
+                <input type="text" id="namaBPR" placeholder="Ketik nama BPR untuk mencari…" autocomplete="off" required
+                  oninput="acOnInput(this)" onfocus="acOnFocus()" onblur="acOnBlur()" onkeydown="acOnKeydown(event)">
+                <span class="ac-selected-badge" id="acBadge">✓ Terpilih</span>
+                <button type="button" class="ac-clear-btn" id="acClearBtn" onclick="acClear()" title="Hapus">✕</button>
+                <span class="ac-arrow" id="acArrow">▼</span>
+              </div>
+              <div class="ac-dropdown" id="acDropdown"></div>
+            </div>
+            <span class="field-hint">Pilih dari daftar atau ketik manual jika tidak ditemukan <span class="ac-count-badge" id="acTotalBadge">255</span></span>
+            <span class="field-error" id="err-namaBPR">Nama BPR wajib diisi</span>
+          </div>
+        </div>
+        <div class="grid-4">
+          <div class="field">
+            <label>Aset BPR <span class="req">*</span></label>
+            <div class="input-wrap has-prefix"><span class="input-prefix">Rp</span>
+              <input type="number" id="asetBPR" placeholder="0" min="0" step="any" required>
+            </div>
+            <span class="field-hint">dalam juta rupiah</span>
+            <span class="field-error" id="err-asetBPR">Aset BPR wajib diisi</span>
+          </div>
+          <div class="field">
+            <label>Rasio Modal (CAR) <span class="req">*</span></label>
+            <div class="input-wrap has-suffix">
+              <input type="number" id="rasioModal" placeholder="0.00" min="0" max="100" step="0.01" required>
+              <span class="input-suffix">%</span>
+            </div>
+            <span class="field-error" id="err-rasioModal">Rasio modal wajib diisi</span>
+          </div>
+          <div class="field">
+            <label>Modal Inti BPR <span class="req">*</span></label>
+            <div class="input-wrap has-prefix"><span class="input-prefix">Rp</span>
+              <input type="number" id="modalInti" placeholder="0" min="0" step="any" required>
+            </div>
+            <span class="field-hint">dalam juta rupiah</span>
+            <span class="field-error" id="err-modalInti">Modal inti wajib diisi</span>
+          </div>
+          <div class="field">
+            <label>Posisi NPL <span class="req">*</span></label>
+            <div class="input-wrap has-suffix">
+              <input type="number" id="posisiNPL" placeholder="0.00" min="0" max="100" step="0.01" required>
+              <span class="input-suffix">%</span>
+            </div>
+            <span class="field-hint">NPL bruto (%)</span>
+            <span class="field-error" id="err-posisiNPL">Posisi NPL wajib diisi</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 02 -->
+    <div class="section">
+      <div class="section-header" onclick="toggleSection(this)">
+        <span class="section-num">02</span>
+        <span class="section-title">Posisi Kredit &amp; AYDA &nbsp;<span style="font-size:9.5px;font-weight:400;color:#6b9bbf;font-family:var(--mono);">posisi 31 Des 2025</span></span>
+        <span class="section-optional-tag">opsional</span>
+        <span class="section-toggle open">▼</span>
+      </div>
+      <div class="section-body">
+        <div class="section-skip-note">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Bagian ini bersifat opsional. Dapat dikosongkan atau diisi 0 jika data belum tersedia.
+        </div>
+        <div class="grid-2">
+          <div class="field">
+            <label>Baki Debet Kredit <span class="opt">(opsional)</span></label>
+            <div class="input-wrap has-prefix"><span class="input-prefix">Rp</span>
+              <input type="number" id="bakiDebet" placeholder="0" min="0" step="any">
+            </div>
+            <span class="field-hint">total outstanding kredit (juta Rp)</span>
+          </div>
+          <div class="field">
+            <label>Baki Debet Total AYDA <span class="opt">(opsional)</span></label>
+            <div class="input-wrap has-prefix"><span class="input-prefix">Rp</span>
+              <input type="number" id="bakiDebetAYDA" placeholder="0" min="0" step="any">
+            </div>
+            <span class="field-hint">seluruh AYDA (juta Rp)</span>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <div class="subsection-label">Baki Debet AYDA Berdasarkan Umur</div>
+        <div class="grid-4">
+          <div class="field">
+            <label>AYDA s.d. 1 Thn</label>
+            <div class="input-wrap has-prefix"><span class="input-prefix">Rp</span>
+              <input type="number" id="ayda1" placeholder="0" min="0" step="any" oninput="hitungTotalUmur()">
+            </div>
+            <span class="field-hint">dalam juta rupiah</span>
+          </div>
+          <div class="field">
+            <label>AYDA &gt;1 s.d. 3 Thn</label>
+            <div class="input-wrap has-prefix"><span class="input-prefix">Rp</span>
+              <input type="number" id="ayda2" placeholder="0" min="0" step="any" oninput="hitungTotalUmur()">
+            </div>
+            <span class="field-hint">dalam juta rupiah</span>
+          </div>
+          <div class="field">
+            <label>AYDA &gt;3 s.d. 5 Thn</label>
+            <div class="input-wrap has-prefix"><span class="input-prefix">Rp</span>
+              <input type="number" id="ayda3" placeholder="0" min="0" step="any" oninput="hitungTotalUmur()">
+            </div>
+            <span class="field-hint">dalam juta rupiah</span>
+          </div>
+          <div class="field">
+            <label>AYDA &gt; 5 Thn</label>
+            <div class="input-wrap has-prefix"><span class="input-prefix">Rp</span>
+              <input type="number" id="ayda4" placeholder="0" min="0" step="any" oninput="hitungTotalUmur()">
+            </div>
+            <span class="field-hint">dalam juta rupiah</span>
+          </div>
+        </div>
+        <div class="total-row">
+          <span class="total-label">∑ Total Baki Debet AYDA (Umur)</span>
+          <span class="total-value" id="totalUmur">Rp 0</span>
+        </div>
+        <span class="field-hint" id="selisihHint" style="color:var(--accent2);display:none">⚠ Total umur tidak sama dengan baki debet total AYDA</span>
+      </div>
+    </div>
+
+    <!-- SECTION 03 -->
+    <div class="section">
+      <div class="section-header" onclick="toggleSection(this)">
+        <span class="section-num">03</span>
+        <span class="section-title">Pengurang Modal Inti</span>
+        <span class="section-optional-tag">opsional</span>
+        <span class="section-toggle open">▼</span>
+      </div>
+      <div class="section-body">
+        <div class="section-skip-note">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Bagian ini bersifat opsional. Dapat dikosongkan atau diisi 0 jika data belum tersedia.
+        </div>
+        <div class="grid-2">
+          <div class="field">
+            <label>Nilai AYDA Total sbg Pengurang Modal Inti <span class="opt">(opsional)</span></label>
+            <div class="input-wrap has-prefix"><span class="input-prefix">Rp</span>
+              <input type="number" id="pengurangModal" placeholder="0" min="0" step="any" oninput="hitungRasio()">
+            </div>
+            <span class="field-hint">dalam juta rupiah</span>
+          </div>
+          <div class="field">
+            <label>Rasio Pengurang / Modal Inti</label>
+            <div class="input-wrap has-suffix">
+              <input type="text" id="rasiopengurang" readonly style="background:#f0f4f8;color:var(--accent);font-family:var(--mono);font-weight:600;" placeholder="—">
+              <span class="input-suffix">%</span>
+            </div>
+            <span class="field-hint">dihitung otomatis</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 04 -->
+    <div class="section">
+      <div class="section-header" onclick="toggleSection(this)">
+        <span class="section-num">04</span>
+        <span class="section-title">Penyebab AYDA Sulit Terjual</span>
+        <span class="section-optional-tag">opsional</span>
+        <span class="section-toggle open">▼</span>
+      </div>
+      <div class="section-body">
+        <div class="section-skip-note">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Bagian ini bersifat opsional. Pilih jika relevan, atau lewati jika tidak ada.
+        </div>
+        <div class="field"><label>Pilih semua penyebab yang relevan <span class="opt">(opsional)</span></label></div>
+        <div class="checkbox-group" id="penyebabGroup">
+          <div class="checkbox-wrapper">
+            <div class="checkbox-item" onclick="toggleCheck(this,'tidak_ada_pembeli')" data-uraian-target="uraian-tidak_ada_pembeli">
+              <input type="checkbox"><span class="check-box"></span><span class="checkbox-label">Tidak ada pembeli</span>
+            </div>
+            <div class="uraian-wrap" id="uraian-tidak_ada_pembeli">
+              <div class="uraian-label">Uraian singkat <span class="optional-tag">opsional</span></div>
+              <textarea class="uraian-textarea" id="uraian_text_tidak_ada_pembeli" placeholder="Jelaskan kondisi / situasi secara singkat…" maxlength="300" oninput="countChar(this,'cc-tidak_ada_pembeli')"></textarea>
+              <div class="uraian-charcount"><span id="cc-tidak_ada_pembeli">0</span>/300</div>
+            </div>
+          </div>
+          <div class="checkbox-wrapper">
+            <div class="checkbox-item" onclick="toggleCheck(this,'pengikatan_tidak_sempurna')" data-uraian-target="uraian-pengikatan_tidak_sempurna">
+              <input type="checkbox"><span class="check-box"></span><span class="checkbox-label">Pengikatan tidak sempurna</span>
+            </div>
+            <div class="uraian-wrap" id="uraian-pengikatan_tidak_sempurna">
+              <div class="uraian-label">Uraian singkat <span class="optional-tag">opsional</span></div>
+              <textarea class="uraian-textarea" id="uraian_text_pengikatan_tidak_sempurna" placeholder="Jelaskan kondisi / situasi secara singkat…" maxlength="300" oninput="countChar(this,'cc-pengikatan_tidak_sempurna')"></textarea>
+              <div class="uraian-charcount"><span id="cc-pengikatan_tidak_sempurna">0</span>/300</div>
+            </div>
+          </div>
+          <div class="checkbox-wrapper">
+            <div class="checkbox-item" onclick="toggleCheck(this,'masih_dihuni')" data-uraian-target="uraian-masih_dihuni">
+              <input type="checkbox"><span class="check-box"></span><span class="checkbox-label">Masih dihuni</span>
+            </div>
+            <div class="uraian-wrap" id="uraian-masih_dihuni">
+              <div class="uraian-label">Uraian singkat <span class="optional-tag">opsional</span></div>
+              <textarea class="uraian-textarea" id="uraian_text_masih_dihuni" placeholder="Jelaskan kondisi / situasi secara singkat…" maxlength="300" oninput="countChar(this,'cc-masih_dihuni')"></textarea>
+              <div class="uraian-charcount"><span id="cc-masih_dihuni">0</span>/300</div>
+            </div>
+          </div>
+          <div class="checkbox-wrapper">
+            <div class="checkbox-item" onclick="toggleCheck(this,'sengketa_hukum')" data-uraian-target="uraian-sengketa_hukum">
+              <input type="checkbox"><span class="check-box"></span><span class="checkbox-label">Sengketa hukum</span>
+            </div>
+            <div class="uraian-wrap" id="uraian-sengketa_hukum">
+              <div class="uraian-label">Uraian singkat <span class="optional-tag">opsional</span></div>
+              <textarea class="uraian-textarea" id="uraian_text_sengketa_hukum" placeholder="Jelaskan kondisi / situasi secara singkat…" maxlength="300" oninput="countChar(this,'cc-sengketa_hukum')"></textarea>
+              <div class="uraian-charcount"><span id="cc-sengketa_hukum">0</span>/300</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 05 -->
+    <div class="section">
+      <div class="section-header" onclick="toggleSection(this)">
+        <span class="section-num">05</span>
+        <span class="section-title">Waktu Perpanjangan Dimohonkan</span>
+        <span class="section-optional-tag">opsional</span>
+        <span class="section-toggle open">▼</span>
+      </div>
+      <div class="section-body">
+        <div class="section-skip-note">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Bagian ini bersifat opsional. Pilih jika ingin menyertakan permohonan waktu perpanjangan.
+        </div>
+        <div class="field"><label>Jika AYDA diberi relaksasi, perpanjangan waktu yang dimohonkan <span class="opt">(opsional)</span></label></div>
+        <div class="radio-group" id="waktuGroup">
+          <div class="radio-item" onclick="selectRadio(this,'2 Tahun')"><input type="radio" name="waktu" value="2 Tahun"><span class="radio-label">2 Tahun</span></div>
+          <div class="radio-item" onclick="selectRadio(this,'3 Tahun')"><input type="radio" name="waktu" value="3 Tahun"><span class="radio-label">3 Tahun</span></div>
+          <div class="radio-item" onclick="selectRadio(this,'4 Tahun')"><input type="radio" name="waktu" value="4 Tahun"><span class="radio-label">4 Tahun</span></div>
+          <div class="radio-item" onclick="selectRadio(this,'5 Tahun')"><input type="radio" name="waktu" value="5 Tahun"><span class="radio-label">5 Tahun</span></div>
+        </div>
+      </div>
+    </div>
+
+  </form>
+</div>
+
+<!-- SUBMIT BAR -->
+<div class="submit-area">
+  <span class="submit-info">Hanya Section 01 (Identitas BPR) yang wajib diisi. Section 02–05 bersifat <em>opsional</em>.</span>
+  <button type="button" class="btn btn-secondary" onclick="resetForm()">Reset</button>
+  <button type="button" class="btn btn-primary" onclick="submitForm()" id="btnSubmit">
+    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    Kirim &amp; Rekam Data
+  </button>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="spinner"></div>
+  <div class="overlay-text">Menyimpan ke Spreadsheet…</div>
+</div>
+<div class="status-toast" id="toast"></div>
+
+<script>
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbwqJlZD9BloNLlcnY2KTyL6qd1tM91A-dyjMUwOBszNBAlnFJgZFddPKxSIvZUhYIIGTg/exec';
+
+// Data input terakhir saja — tidak ada riwayat
+let lastData = null;
+
+// ============================================================
+// BPR LIST
+// ============================================================
+const BPR_LIST = ["PT. BPR Gunung Kawi","PT. BPR Setia Karib Abadi","PT. BPRS Kedung Arto","PT. BPR Gunung Merbabu","PT. BPR Weleri Makmur","PT. BPR Gunung Kinibalu","PT. BPR Rudo Indobank","PD. BPR BKK Kota Semarang","PT. BPR Gunung Rizki Pusaka Utama","PT. BPR Mandiri Artha Abadi","PD. BPR Bank Pasar Kota Semarang","PT. BPR Restu Artha Makmur","PT. BPR Modern Express Jateng","PT. BPR Adil Jaya Artha","PT. BPR Estetika Artha Guna","PT. BPR Artha Tanah Mas","PT. BPR Artha Mukti Santosa","PT. BPR Arto Moro","PT. BPR Pollux","PT. BPR Agung Sejahtera","PT. BPR Jateng","PT. BPR Karticentra Artha","PT. BPR Muncul Artha Sejahtera","PT. BPR Guru Jateng","PT. BPR Sinar Mitra Sejahtera","PT. BPRS Mitra Harmoni Kota Semarang","PT. BPR Dana Aman Tiara Abadi","PT. BPR BKK Jateng (Perseroda)","PT. BPR BKK Ungaran (Perseroda)","PT. BPR Mitra Mulia Persada","PT. BPR Mekar Nugraha","PT. BPR Argo Dana Ungaran","PT. BPR Restu Klepu Makmur","PT. BPR Satria Pertiwi Semarang","PT. BPR Klepu Mitra Kencana","PT. BPR Pratama Dana Abadi","PT. BPR Persada Ganda","PT. BPR Hartasarana","PT. BPR Dana Mitra Sentosa","PT. BPR Inti Ambarawa Sejahtera","PT. BPR Ambarawa Persada","PT. BPR Nusamba Cepiring","PT. BPR Arthama Cerah","PT. BPR Citra Darian","PT. BPR Weleri Jayapersada","PT. BPR Kendali Artha","PT. BPR Dhanatani Cepiring","PT. BPR Artha Kaliwungu","PT. BPR Enggal Makmur Adi Santoso","PT. BPR Pasar Boja","PT. BPR Anugerah Harta Kaliwungu","PT. BPR BKK Kendal (Perseroda)","PT. BPR Arthanugraha Makmursejahtera","PT. BPR Artamas","PT. BPR Restu Mranggen Makmur","PT. BPR Mranggen Mitra Persada","PT. BPR Artha Mranggenjaya","PT. BPR Artha Nusantara Abadi","PD. BPR BKK Demak","PT. BPR Kridaharta Salatiga","PT. BPR Dinamika Bangun Arta","Perumda BPR Bank Salatiga","PT. BPR Satya Artha","PT. BPR BKK Kab. Pekalongan (Perseroda)","PT. BPR Bank Pekalongan (Perseroda)","PT. BPR Sejahtera Artha Sembada","PD. BPR BKK Kota Pekalongan","PD. BPR BKK Taman Kabupaten Pemalang","PT. BPR Bank Pemalang (Perseroda)","PT. BPR Panasayu Arthalayan Sejahtera","PT. BPR Hidup Artha Putra","PT. BPR BKK Batang (Perseroda)","PT. BPR Pemberdayaan Ekonomi Rakyat","PT. BPR Arta Utama","PD. BPR BKK Kota Tegal","PD. BPR Bank Pasar Kota Tegal","PT. BPR Central Artha","PT. BPRS Hikmah Bahari","PT. BPR Arthapuspa Mega","PT. BPR Arismentari Ayu","PT. BPR Dhana Adiwerna","PT. BPR Nusamba Adiwerna","PT. BPR Sahabat Tata","PT. BPR Bumi Sediaguna","PT. BPR Nusumma Jateng","PT. BPR Artha Kramat","PT. BPR Mega Artha Mustika","PT. BPR BKK Kabupaten Tegal (Perseroda)","PT. BPR Bank Tegal Gotong Royong","PT. BPR Bumiayu Bangun Citra","Perumda BPR Bank Brebes","PT. BPR Arisma Mandiri","PT. BPR Muhadi Setia Budi","PD. BPR BKK Banjarharjo","Perumda BPR Bank Magelang","PT. BPR Mertoyudan Makmur","PT. BPR Mitra","PD. BPR BKK Kota Magelang","PT. BPR Sinar Garuda Prima","PD. BPR Bapas 69","PT. BPR Artha Mertoyudan","PT. BPR Mulyo Lumintu","PT. BPR Hidup Artha Graha","PT. BPR Kembang Parama","PT. BPR Lumbung Artha Muntilanindo","PT. BPR Sejahtera","PT. BPR Danarakyat Sentosa","PT. BPR Prima","PT. BPR BKK Muntilan (Perseroda)","PT. BPR Artha Sambhara","PT. BPR Niji","PD. BPR Bank Pasar Kab. Temanggung","PT. BPR Multi Arthanusa","PT. BPR Kusuma Sumbing","PT. BPR Kedu Artha Setia","PT. BPR Surya Kusuma Kranggan","PD. BPR BKK Temanggung","PT. BPR Intan Surya","PT. BPR Puspa Kencana","PT. BPR Artha Selomanik Putra","PT. BPR Surya Yudha Wonosobo","PD. BPR Bank Wonosobo","PD. BPR BKK Wonosobo","PD. BPR BKK Purworejo","PT. BPR BKK Kebumen (Perseroda)","PD. BPR Bank Kebumen","PT. BPR Araya Arta","PT. BPR Sinararta Sejahtera","PT. BPR Dana Mitra Sejahtera","PT. BPR Soka Panca Artha","PT. BPR Gunung Simping Artha","PT. BPR Mitra Gema Mandiri","PT. BPR Dana Mitra Sakti","PT. BPR Tirta Danarta","PT. BPR BKK Purwokerto (Perseroda)","PT. BPR DP Taspen Jateng","PT. BPR Eleska Artha","PT. BPR Surya Yudhakencana","PT. BPR BKK Mandiraja (Perseroda)","PD. BPR Artha Perwira","PT. BPR BKK Purbalingga (Perseroda)","PT. BPR Buana Artha Kassiti","PT. BPR Gunung Slamet","PT. BPR Banyu Artha Citra","PT. BPR Citanduy Artha","PT. BPRS Bangun Arta","PT. BPR BKK Cilacap (Perseroda)","PT. BPR Ukabima Sejahtera","PT. BPR Artha Rahayu","PT. BPRS Gunung Slamet","PT. BPR Dhana Mitratama, Blora","PT. BPR Dutabhakti Insani","PT. BPR BKK Blora","PT. BPR Cepu Nasionalbank","Perumda BPR Bank Blora Artha","PT. BPR Sungkunandhana","PT. BPR Artha Huda Abadi","PT. BPR Artaperdana Deltasentosa","PT. BPR Juwana Artha Sentosa","PT. BPR Tayu Duta Persada","PD. BPR BKK Pati","PT. BPR Asabahana Sejahtera","PT. BPR Koperasi Wedarijaksa","PT. BPR Bank Daerah Pati","PT. BPR Mitra Pati Mandiri","PT. BPR Kusuma Arta Rini","PT. BPR Syariah Artha Mas Abadi","PT. BPR BKK Jepara (Perseroda)","PT. BPR Nusamba Pecangaan","PT. BPR Hartha Muriatama","PT. BPR Taruna Adidaya Santosa","PT. BPR Mitra Budikusuma Mandiri","PD. BPR BKK Kudus","PD. BPR Bank Pasar Kabupaten Kudus","PT. BPR Catur Artha Jaya","PD. BPR BKK Lasem","PT. BPR Bank Rembang","PD. BPR Bank Purwa Artha","PT. BPR BKK Purwodadi (Perseroda)","PT. BPR Semeru","PT. BPR Wirosari Ijo","PT. BPR Bank Boyolali (Perseroda)","PT. BPR Nusamba Ampel","PT. BPR Mitra Pandanaran Mandiri","PT. BPR Guna Daya","PD. BPR BKK Boyolali","PT. BPR Arthayasa Ageng","PD. BPR Bank Solo","PT. BPR Sukadana","PT. BPR Sabar Artha Prima","PT. BPR Dana Utama","PT. BPR Adipura Santosa","PT. BPR Rejeki Insani","PT. BPR Bina Langgeng Mulia","PT. BPR Sukadya Rindang","PT. BPR Suryamas","PT. BPR Central International","PT. BPR Artha Daya","PT. BPR Lestari Jateng","PT. BPR Buana Artha Lestari","PT. BPRS Hikmah Khazanah","PT. BPR BKK Wonogiri (Perseroda)","PD. BPR Giri Sukadana","PT. BPR Gajah Mungkur","PT. BPR Antar Rumeksa Arta","PT. BPR Bina Sejahtera Insani","PUD. BPR Bank Karanganyar","PD. BPR BKK Tasikmadu","PT. BPR Cita Dewi","PT. BPR Kandimadu Artha","PT. BPR Lawu Artha","PT. BPR Arta Mas Surakarta","PD. BPR Bank Daerah Karanganyar","PT. BPR Pura Arthakencana","PT. BPR Restu Tawangmangu Jaya","PT. BPR Trihasta Prasodjo","PD. BPR Djoko Tingkir","PT. BPR BKK Karangmalang (Perseroda)","PT. BPR Artha Moro","PT. BPR Sumber Arta","PT. BPR Mitra Banaran Mandiri","PT. BPR Arthareksa Sejahtera","PT. BPR Bank Klaten (Perseroda)","PT. BPR Delanggu Raya","PT. BPR Bhakti Riyadi","PT. BPR Shinta Bhakti Wedi","PT. BPR Danamas Pratama","Koperasi BPR Patma","PT. BPR Ukabima BMMS","PT. BPR Ceper","PD. BPR BKK Tulung","PT. BPR Wuni Artha Utama","PT. BPR Restu Artha Abadi","PT. BPR Klaten Sejahtera","PT. BPR Gunung Mas","PT. BPR Hardi Mas Mandiri","PT. BPR Bank Sukoharjo","PT. BPR BKK Grogol (Perseroda)","PT. BPR Jadimanunggal Abadi","PT. BPR Artha Sari Sentosa","PT. BPR Wira Ardana Sejahtera","PT. BPR Bekonang","PT. BPR Solobaru Permai","PT. BPR Grogol Joyo","PT. BPR Sami Makmur","PT. BPR Kartadhani Mulya","PT. BPR Kartasura Makmur","PT. BPR Ihuthan Ganda","PT. BPR Sinarguna Sejahtera","PT. BPR Kartasura Saribumi","PT. BPR Surya Utama"];
+
+// ============================================================
+// AUTOCOMPLETE
+// ============================================================
+let acIdx=-1, acFromList=false, acBlurTO=null;
+document.getElementById('acTotalBadge').textContent = BPR_LIST.length;
+
+function acHL(t,q){if(!q)return t;return t.replace(new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi'),m=>`<mark>${m}</mark>`);}
+function acRender(q){
+  const dd=document.getElementById('acDropdown'),lq=q.trim().toLowerCase();
+  const f=!lq?BPR_LIST.slice(0,40):[...BPR_LIST.filter(n=>n.toLowerCase().startsWith(lq)),...BPR_LIST.filter(n=>!n.toLowerCase().startsWith(lq)&&n.toLowerCase().includes(lq))].slice(0,50);
+  acIdx=-1;dd.innerHTML='';
+  if(!f.length){dd.innerHTML='<div class="ac-empty">Tidak ditemukan.</div><div class="ac-manual-hint">↳ Ketik manual jika tidak ada di daftar</div>';}
+  else{f.forEach(n=>{const d=document.createElement('div');d.className='ac-item';d.innerHTML=acHL(n,lq);d.addEventListener('mousedown',e=>{e.preventDefault();acSel(n);});dd.appendChild(d);});}
+  dd.classList.add('show');document.getElementById('acArrow').classList.add('open');
+}
+function acSel(n){
+  document.getElementById('namaBPR').value=n;acFromList=true;
+  document.getElementById('acDropdown').classList.remove('show');document.getElementById('acArrow').classList.remove('open');
+  document.getElementById('acBadge').style.display='inline-block';document.getElementById('acClearBtn').style.display='flex';
+  document.getElementById('namaBPR').classList.remove('error');document.getElementById('err-namaBPR').classList.remove('show');
+  updateProgress();
+}
+function acClear(){
+  document.getElementById('namaBPR').value='';acFromList=false;
+  document.getElementById('acBadge').style.display='none';document.getElementById('acClearBtn').style.display='none';
+  document.getElementById('acDropdown').classList.remove('show');document.getElementById('acArrow').classList.remove('open');
+  document.getElementById('namaBPR').focus();updateProgress();
+}
+function acOnInput(inp){acFromList=false;document.getElementById('acBadge').style.display='none';document.getElementById('acClearBtn').style.display=inp.value?'flex':'none';acRender(inp.value);updateProgress();}
+function acOnFocus(){clearTimeout(acBlurTO);if(!acFromList)acRender(document.getElementById('namaBPR').value);}
+function acOnBlur(){acBlurTO=setTimeout(()=>{document.getElementById('acDropdown').classList.remove('show');document.getElementById('acArrow').classList.remove('open');acIdx=-1;},180);}
+function acOnKeydown(e){
+  const dd=document.getElementById('acDropdown'),items=dd.querySelectorAll('.ac-item');
+  if(!dd.classList.contains('show'))return;
+  if(e.key==='ArrowDown'){e.preventDefault();acIdx=Math.min(acIdx+1,items.length-1);items.forEach((el,i)=>{el.classList.toggle('active',i===acIdx);if(i===acIdx)el.scrollIntoView({block:'nearest'});});}
+  else if(e.key==='ArrowUp'){e.preventDefault();acIdx=Math.max(acIdx-1,-1);items.forEach((el,i)=>{el.classList.toggle('active',i===acIdx);if(i===acIdx)el.scrollIntoView({block:'nearest'});});}
+  else if(e.key==='Enter'){e.preventDefault();if(acIdx>=0&&items[acIdx])acSel(items[acIdx].textContent.trim());else dd.classList.remove('show');}
+  else if(e.key==='Escape'){dd.classList.remove('show');document.getElementById('acArrow').classList.remove('open');}
+}
+
+function toggleSection(h){
+  const b=h.nextElementSibling,t=h.querySelector('.section-toggle');
+  b.classList.toggle('collapsed');
+  t.classList.toggle('open',!b.classList.contains('collapsed'));
+}
+
+const checkedVals=new Set();
+function toggleCheck(el,val){
+  el.classList.toggle('checked');const ok=el.classList.contains('checked');
+  if(ok){checkedVals.add(val);}else{checkedVals.delete(val);const ta=document.getElementById('uraian_text_'+val);if(ta){ta.value='';const cc=document.getElementById('cc-'+val);if(cc)cc.textContent='0';}}
+  const tid=el.getAttribute('data-uraian-target');if(tid){const ue=document.getElementById(tid);if(ue){if(ok){ue.classList.add('show');setTimeout(()=>{const ta=ue.querySelector('.uraian-textarea');if(ta)ta.focus();},200);}else ue.classList.remove('show');}}
+  updateProgress();
+}
+function countChar(ta,cid){const el=document.getElementById(cid);if(el)el.textContent=ta.value.length;}
+
+let selWaktu='';
+function selectRadio(el,val){
+  document.querySelectorAll('#waktuGroup .radio-item').forEach(r=>r.classList.remove('selected'));
+  el.classList.add('selected');selWaktu=val;updateProgress();
+}
+
+function hitungTotalUmur(){
+  const t=['ayda1','ayda2','ayda3','ayda4'].reduce((s,id)=>s+(parseFloat(document.getElementById(id).value)||0),0);
+  document.getElementById('totalUmur').textContent='Rp '+fmtNum(t);
+  const bd=parseFloat(document.getElementById('bakiDebetAYDA').value)||0;
+  document.getElementById('selisihHint').style.display=(bd>0&&Math.abs(t-bd)>0.01)?'block':'none';
+  updateProgress();
+}
+function hitungRasio(){
+  const pm=parseFloat(document.getElementById('pengurangModal').value)||0;
+  const mi=parseFloat(document.getElementById('modalInti').value)||0;
+  document.getElementById('rasiopengurang').value=mi>0?((pm/mi*100).toFixed(2)):'';
+  updateProgress();
+}
+function fmtNum(n){return n.toLocaleString('id-ID',{minimumFractionDigits:0,maximumFractionDigits:2});}
+function fmtRp(n){return 'Rp '+fmtNum(parseFloat(n)||0)+' juta';}
+function fmtPct(n){return parseFloat(n||0).toFixed(2)+'%';}
+function escH(s){return s?s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'):'—';}
+
+function updateProgress(){
+  const w=['namaBPR','asetBPR','rasioModal','modalInti','posisiNPL'];
+  const fw=w.filter(id=>document.getElementById(id).value.trim()!=='').length;
+  const ops=['bakiDebet','bakiDebetAYDA','pengurangModal'];
+  let fo=ops.filter(id=>document.getElementById(id).value.trim()!=='').length;
+  if(checkedVals.size>0)fo++;if(selWaktu)fo++;
+  document.getElementById('progressFill').style.width=((fw+fo)/(w.length+ops.length+2)*100)+'%';
+}
+document.querySelectorAll('input[type="number"]').forEach(el=>{
+  el.addEventListener('input',updateProgress);
+  if(el.id==='modalInti')el.addEventListener('input',hitungRasio);
+});
+
+function validate(){
+  let ok=true;
+  [{id:'namaBPR',errId:'err-namaBPR'},{id:'asetBPR',errId:'err-asetBPR'},{id:'rasioModal',errId:'err-rasioModal'},{id:'modalInti',errId:'err-modalInti'},{id:'posisiNPL',errId:'err-posisiNPL'}].forEach(({id,errId})=>{
+    const el=document.getElementById(id),err=document.getElementById(errId),empty=!el.value.trim();
+    el.classList.toggle('error',empty);err.classList.toggle('show',empty);if(empty)ok=false;
+  });
+  return ok;
+}
+
+// ============================================================
+// SUBMIT
+// ============================================================
+async function submitForm(){
+  if(!validate()){showToast('Harap lengkapi Identitas BPR (Section 01)','error');return;}
+
+  const allP=['tidak_ada_pembeli','pengikatan_tidak_sempurna','masih_dihuni','sengketa_hukum'];
+  const uraian={};
+  allP.forEach(k=>{if(checkedVals.has(k)){const ta=document.getElementById('uraian_text_'+k);uraian[k]=ta?ta.value.trim():''}});
+
+  const data={
+    timestamp:                        new Date().toLocaleString('id-ID'),
+    namaBPR:                          document.getElementById('namaBPR').value.trim(),
+    asetBPR:                          document.getElementById('asetBPR').value,
+    rasioModal:                       document.getElementById('rasioModal').value,
+    modalInti:                        document.getElementById('modalInti').value,
+    posisiNPL:                        document.getElementById('posisiNPL').value,
+    bakiDebet:                        document.getElementById('bakiDebet').value||'0',
+    bakiDebetAYDA:                    document.getElementById('bakiDebetAYDA').value||'0',
+    ayda_sd1:                         document.getElementById('ayda1').value||'0',
+    ayda_1_3:                         document.getElementById('ayda2').value||'0',
+    ayda_3_5:                         document.getElementById('ayda3').value||'0',
+    ayda_gt5:                         document.getElementById('ayda4').value||'0',
+    pengurangModal:                   document.getElementById('pengurangModal').value||'0',
+    penyebab:                         Array.from(checkedVals).join(', ')||'-',
+    uraian_tidak_ada_pembeli:         uraian['tidak_ada_pembeli']||'',
+    uraian_pengikatan_tidak_sempurna: uraian['pengikatan_tidak_sempurna']||'',
+    uraian_masih_dihuni:              uraian['masih_dihuni']||'',
+    uraian_sengketa_hukum:            uraian['sengketa_hukum']||'',
+    waktuPermohonan:                  selWaktu||'-',
+  };
+
+  document.getElementById('overlay').classList.add('show');
+  document.getElementById('btnSubmit').disabled=true;
+
+  let gasOk=false;
+  try{
+    const resp=await fetch(GAS_URL,{method:'POST',body:JSON.stringify(data)});
+    const res=await resp.json();
+    gasOk=(res.status==='success');
+  }catch(e){console.warn('GAS:',e);}
+
+  document.getElementById('overlay').classList.remove('show');
+  document.getElementById('btnSubmit').disabled=false;
+
+  // Simpan HANYA data terakhir — data sebelumnya otomatis terganti
+  lastData = data;
+
+  // Tampilkan panel laporan
+  showSuccessPanel(gasOk, data);
+
+  // Reset form
+  resetForm();
+
+  // Scroll ke panel laporan di atas
+  setTimeout(() => {
+    document.getElementById('successPanel').scrollIntoView({behavior:'smooth', block:'start'});
+  }, 120);
+}
+
+// ============================================================
+// SUCCESS PANEL — hanya data yang baru saja diinput
+// ============================================================
+function showSuccessPanel(gasOk, d){
+  // Update judul
+  document.getElementById('spTitle').textContent = gasOk
+    ? '✓ Data berhasil disimpan ke Spreadsheet'
+    : '⚠ Data disimpan (koneksi spreadsheet gagal — cek jaringan)';
+  document.getElementById('spSub').textContent =
+    'Periksa laporan di bawah untuk memastikan data yang Anda input sudah benar.';
+  document.getElementById('spTimestamp').textContent = d.timestamp;
+
+  // Helper membuat baris grid
+  function cell(label, val, cls=''){
+    return `<div class="sp-cell"><div class="sp-cell-label">${label}</div><div class="sp-cell-val ${cls}">${val}</div></div>`;
+  }
+  function cellFull(label, val, cls=''){
+    return `<div class="sp-cell sp-full"><div class="sp-cell-label">${label}</div><div class="sp-cell-val ${cls}">${val}</div></div>`;
+  }
+  function sep(label){
+    return `<div class="sp-section-sep">${label}</div>`;
+  }
+
+  // Penyebab tags
+  const penyebabHtml = d.penyebab && d.penyebab!=='-'
+    ? d.penyebab.split(',').map(p=>`<span class="tag">${p.trim()}</span>`).join(' ')
+    : '<span style="color:#aaa;font-size:9px;">Tidak dipilih</span>';
+
+  // Waktu tag
+  const waktuHtml = d.waktuPermohonan && d.waktuPermohonan!=='-'
+    ? `<span class="waktu-tag">${d.waktuPermohonan}</span>`
+    : '<span style="color:#aaa;font-size:9px;">Tidak dipilih</span>';
+
+  // Uraian — hanya tampilkan yang ada isinya
+  const uraianRows = [
+    {key:'uraian_tidak_ada_pembeli',      label:'Uraian: Tidak Ada Pembeli'},
+    {key:'uraian_pengikatan_tidak_sempurna', label:'Uraian: Pengikatan Tidak Sempurna'},
+    {key:'uraian_masih_dihuni',           label:'Uraian: Masih Dihuni'},
+    {key:'uraian_sengketa_hukum',         label:'Uraian: Sengketa Hukum'},
+  ].filter(r=>d[r.key]).map(r=>cellFull(r.label, escH(d[r.key]),'text')).join('');
+
+  document.getElementById('spGrid').innerHTML =
+    sep('Identitas BPR') +
+    cellFull('Nama BPR', escH(d.namaBPR), 'text') +
+    cell('Aset BPR', fmtRp(d.asetBPR)) +
+    cell('Rasio Modal (CAR)', fmtPct(d.rasioModal), 'pct') +
+    cell('Modal Inti BPR', fmtRp(d.modalInti)) +
+    cell('Posisi NPL (Bruto)', fmtPct(d.posisiNPL), 'pct') +
+    sep('Posisi Kredit & AYDA') +
+    cell('Baki Debet Kredit', fmtRp(d.bakiDebet)) +
+    cell('Baki Debet Total AYDA', fmtRp(d.bakiDebetAYDA)) +
+    cell('AYDA s.d. 1 Thn', fmtRp(d.ayda_sd1)) +
+    cell('AYDA &gt;1 s.d. 3 Thn', fmtRp(d.ayda_1_3)) +
+    cell('AYDA &gt;3 s.d. 5 Thn', fmtRp(d.ayda_3_5)) +
+    cell('AYDA &gt;5 Thn', fmtRp(d.ayda_gt5)) +
+    sep('Pengurang Modal & Penyebab') +
+    cell('Pengurang Modal Inti', fmtRp(d.pengurangModal)) +
+    cellFull('Penyebab AYDA Sulit Terjual', penyebabHtml) +
+    uraianRows +
+    sep('Permohonan Waktu') +
+    cellFull('Perpanjangan Dimohonkan', waktuHtml);
+
+  document.getElementById('successPanel').classList.add('show');
+}
+
+function closePanel(){
+  document.getElementById('successPanel').classList.remove('show');
+  // Hapus data terakhir dari memori agar tidak bisa diakses lagi
+  lastData = null;
+}
+
+// ============================================================
+// DOWNLOAD PDF — menggunakan jsPDF (pure client-side, tanpa dialog print)
+// ============================================================
+function downloadPDF(){
+  if(!lastData){showToast('Tidak ada data untuk dicetak.','error');return;}
+  const d = lastData;
+
+  // Load jsPDF dari CDN jika belum ada
+  if(typeof window.jspdf === 'undefined'){
+    showToast('Memuat library PDF...','success');
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+    s.onload = () => { generatePDF(d); };
+    s.onerror = () => { showToast('Gagal memuat library PDF. Cek koneksi internet.','error'); };
+    document.head.appendChild(s);
+  } else {
+    generatePDF(d);
+  }
+}
+
+function generatePDF(d){
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+  const W = 210; // A4 width mm
+  const margin = 14;
+  const colW = (W - margin*2) / 2;
+  let y = 0;
+
+  // ---- Warna ----
+  const C_NAVY   = [26, 74, 107];
+  const C_ORANGE = [200, 68, 10];
+  const C_GREEN  = [26, 107, 60];
+  const C_LGREEN = [240, 250, 245];
+  const C_LGREEN2= [200, 230, 212];
+  const C_LBLUE  = [232, 240, 247];
+  const C_WHITE  = [255, 255, 255];
+  const C_GRAY   = [107, 101, 96];
+  const C_LGRAY  = [247, 245, 242];
+  const C_TEXT   = [28, 28, 28];
+  const C_ORANGE2= [200, 68, 10];
+
+  // ============================================================
+  // HEADER
+  // ============================================================
+  doc.setFillColor(...C_NAVY);
+  doc.rect(0, 0, W, 22, 'F');
+  // Garis oranye bawah header
+  doc.setFillColor(...C_ORANGE);
+  doc.rect(0, 22, W, 1.5, 'F');
+
+  // Badge BPR
+  doc.setFillColor(...C_ORANGE);
+  doc.roundedRect(margin, 5, 12, 6, 1, 1, 'F');
+  doc.setTextColor(...C_WHITE);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(6.5);
+  doc.text('BPR', margin + 6, 9.2, {align:'center'});
+
+  // Judul
+  doc.setTextColor(...C_WHITE);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(12);
+  doc.text('Permohonan Relaksasi AYDA', margin + 16, 10);
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(7);
+  doc.setTextColor(200, 220, 240);
+  doc.text('Agunan Yang Diambil Alih — Formulir Informasi BPR  |  Data posisi per 31 Desember 2025', margin + 16, 15.5);
+
+  y = 28;
+
+  // ============================================================
+  // PANEL SUKSES
+  // ============================================================
+  doc.setFillColor(...C_LGREEN);
+  doc.rect(margin, y, W - margin*2, 10, 'F');
+  doc.setFillColor(...C_GREEN);
+  doc.rect(margin, y, 1.5, 10, 'F');
+
+  // Centang
+  doc.setFillColor(...C_GREEN);
+  doc.circle(margin + 6, y + 5, 3, 'F');
+  doc.setTextColor(...C_WHITE);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(8);
+  doc.text('\u2713', margin + 5.1, y + 5.9);
+
+  doc.setTextColor(...C_GREEN);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(9.5);
+  doc.text('Data Berhasil Disimpan ke Spreadsheet', margin + 12, y + 4.5);
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(7.5);
+  doc.setTextColor(...C_GRAY);
+  doc.text('Berikut laporan data yang diinput. Simpan dokumen ini untuk keperluan pengecekan.', margin + 12, y + 8.5);
+
+  y += 14;
+
+  // ============================================================
+  // FUNGSI HELPER SECTION HEADER
+  // ============================================================
+  function sectionHeader(label) {
+    doc.setFillColor(...C_GREEN);
+    doc.rect(margin, y, W - margin*2, 5.5, 'F');
+    doc.setTextColor(...C_WHITE);
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(7);
+    doc.text(label.toUpperCase(), margin + 3, y + 3.8);
+    y += 5.5;
+  }
+
+  // ============================================================
+  // FUNGSI HELPER BARIS DUA KOLOM
+  // ============================================================
+  function rowPair(lbl1, val1, lbl2, val2, rowH=10) {
+    // Kolom kiri
+    doc.setFillColor(...C_LGRAY);
+    doc.rect(margin, y, colW, rowH, 'F');
+    doc.setDrawColor(216, 210, 200);
+    doc.setLineWidth(0.2);
+    doc.rect(margin, y, colW, rowH);
+
+    doc.setTextColor(...C_GRAY);
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(6);
+    doc.text(lbl1.toUpperCase(), margin + 3, y + 3.5);
+    doc.setTextColor(...C_NAVY);
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(8.5);
+    doc.text(String(val1), margin + 3, y + 8);
+
+    if(lbl2 !== null){
+      // Kolom kanan
+      const x2 = margin + colW;
+      doc.setFillColor(...C_LGRAY);
+      doc.rect(x2, y, colW, rowH, 'F');
+      doc.rect(x2, y, colW, rowH);
+
+      doc.setTextColor(...C_GRAY);
+      doc.setFont('helvetica','bold');
+      doc.setFontSize(6);
+      doc.text(lbl2.toUpperCase(), x2 + 3, y + 3.5);
+      doc.setTextColor(...C_NAVY);
+      doc.setFont('helvetica','bold');
+      doc.setFontSize(8.5);
+      doc.text(String(val2||'—'), x2 + 3, y + 8);
+    }
+
+    y += rowH;
+  }
+
+  // Baris satu kolom penuh
+  function rowFull(lbl, val, rowH=10, valColor=C_NAVY) {
+    const fw = W - margin*2;
+    doc.setFillColor(...C_LGRAY);
+    doc.rect(margin, y, fw, rowH, 'F');
+    doc.setDrawColor(216, 210, 200);
+    doc.setLineWidth(0.2);
+    doc.rect(margin, y, fw, rowH);
+
+    doc.setTextColor(...C_GRAY);
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(6);
+    doc.text(lbl.toUpperCase(), margin + 3, y + 3.5);
+    doc.setTextColor(...valColor);
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(9);
+    // Truncate jika terlalu panjang
+    const maxW = fw - 6;
+    let valStr = String(val||'—');
+    const lines = doc.splitTextToSize(valStr, maxW);
+    if(lines.length > 1){
+      doc.setFontSize(8);
+      lines.slice(0,2).forEach((ln,i) => doc.text(ln, margin+3, y+7+(i*3.5)));
+      if(lines.length > 2) { y += (lines.length-1)*2; }
+    } else {
+      doc.text(valStr, margin + 3, y + 8);
+    }
+    y += rowH;
+  }
+
+  // ============================================================
+  // SECTION 1 — IDENTITAS BPR
+  // ============================================================
+  sectionHeader('Identitas BPR  —  posisi 31 Desember 2025');
+  rowFull('Nama BPR', d.namaBPR, 11, C_NAVY);
+  rowPair('Aset BPR', fmtRp(d.asetBPR), 'Rasio Modal (CAR)', fmtPct(d.rasioModal));
+  rowPair('Modal Inti BPR', fmtRp(d.modalInti), 'Posisi NPL (Bruto)', fmtPct(d.posisiNPL));
+
+  y += 2;
+
+  // ============================================================
+  // SECTION 2 — POSISI KREDIT & AYDA
+  // ============================================================
+  sectionHeader('Posisi Kredit & AYDA  —  posisi 31 Desember 2025');
+  rowPair('Baki Debet Kredit', fmtRp(d.bakiDebet), 'Baki Debet Total AYDA', fmtRp(d.bakiDebetAYDA));
+  rowPair('AYDA s.d. 1 Tahun', fmtRp(d.ayda_sd1), 'AYDA >1 s.d. 3 Tahun', fmtRp(d.ayda_1_3));
+  rowPair('AYDA >3 s.d. 5 Tahun', fmtRp(d.ayda_3_5), 'AYDA >5 Tahun', fmtRp(d.ayda_gt5));
+
+  y += 2;
+
+  // ============================================================
+  // SECTION 3 — PENGURANG MODAL
+  // ============================================================
+  sectionHeader('Pengurang Modal Inti');
+  rowPair('Nilai AYDA sbg Pengurang Modal Inti', fmtRp(d.pengurangModal), null, null);
+
+  y += 2;
+
+  // ============================================================
+  // SECTION 4 — PENYEBAB & URAIAN
+  // ============================================================
+  sectionHeader('Penyebab AYDA Sulit Terjual');
+
+  const penyebabList = d.penyebab && d.penyebab !== '-'
+    ? d.penyebab.split(',').map(p => p.trim()).join('  |  ')
+    : 'Tidak dipilih';
+  rowFull('Penyebab yang Dipilih', penyebabList, 10, C_ORANGE2);
+
+  // Uraian — hanya yang ada isinya
+  const uraianMap = [
+    {key:'uraian_tidak_ada_pembeli',           label:'Uraian: Tidak Ada Pembeli'},
+    {key:'uraian_pengikatan_tidak_sempurna',   label:'Uraian: Pengikatan Tidak Sempurna'},
+    {key:'uraian_masih_dihuni',                label:'Uraian: Masih Dihuni'},
+    {key:'uraian_sengketa_hukum',              label:'Uraian: Sengketa Hukum'},
+  ];
+  uraianMap.forEach(u => {
+    if(d[u.key]){
+      const txt = d[u.key];
+      const lines = doc.splitTextToSize(txt, (W - margin*2) - 6);
+      const h = Math.max(10, 6 + lines.length * 4);
+      const fw = W - margin*2;
+      doc.setFillColor(...C_LGRAY);
+      doc.rect(margin, y, fw, h, 'F');
+      doc.setDrawColor(216,210,200); doc.setLineWidth(0.2);
+      doc.rect(margin, y, fw, h);
+      doc.setTextColor(...C_GRAY); doc.setFont('helvetica','bold'); doc.setFontSize(6);
+      doc.text(u.label.toUpperCase(), margin+3, y+3.5);
+      doc.setTextColor(...C_TEXT); doc.setFont('helvetica','normal'); doc.setFontSize(8);
+      lines.forEach((ln,i) => doc.text(ln, margin+3, y+7+(i*4)));
+      y += h;
+    }
+  });
+
+  y += 2;
+
+  // ============================================================
+  // SECTION 5 — WAKTU PERPANJANGAN
+  // ============================================================
+  sectionHeader('Waktu Perpanjangan Dimohonkan');
+  rowFull('Perpanjangan yang Dimohonkan',
+    d.waktuPermohonan && d.waktuPermohonan !== '-' ? d.waktuPermohonan : 'Tidak dipilih',
+    10, C_NAVY);
+
+  // ============================================================
+  // FOOTER
+  // ============================================================
+  const pageH = 297;
+  const footerY = pageH - 12;
+  doc.setFillColor(240, 237, 232);
+  doc.rect(0, footerY - 2, W, 14, 'F');
+  doc.setDrawColor(...C_NAVY); doc.setLineWidth(0.3);
+  doc.line(0, footerY - 2, W, footerY - 2);
+
+  doc.setTextColor(...C_GRAY);
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(6.5);
+  doc.text(`Dicetak: ${d.timestamp}`, margin, footerY + 2);
+  doc.text('Hanya untuk keperluan pengecekan internal penginput — RAHASIA', W/2, footerY + 2, {align:'center'});
+  doc.text('Halaman 1 / 1', W - margin, footerY + 2, {align:'right'});
+
+  // ---- Simpan ----
+  const fname = d.namaBPR.replace(/[^a-zA-Z0-9]/g,'_').slice(0,30);
+  doc.save(`AYDA_${fname}_${new Date().toISOString().slice(0,10)}.pdf`);
+  showToast('✓ File PDF berhasil diunduh!');
+}
+
+// ============================================================
+// DOWNLOAD EXCEL — hanya data terakhir
+// ============================================================
+function downloadExcel(){
+  if(!lastData){showToast('Tidak ada data untuk diunduh.','error');return;}
+  const d=lastData;
+  const H=['Timestamp','Nama BPR','Aset BPR (Juta Rp)','CAR (%)','Modal Inti (Juta Rp)','NPL (%)','Baki Debet Kredit (Juta Rp)','Baki Debet Total AYDA (Juta Rp)','AYDA s.d.1Thn (Juta Rp)','AYDA >1-3Thn (Juta Rp)','AYDA >3-5Thn (Juta Rp)','AYDA >5Thn (Juta Rp)','Pengurang Modal Inti (Juta Rp)','Penyebab AYDA Sulit Terjual','Uraian: Tidak Ada Pembeli','Uraian: Pengikatan Tidak Sempurna','Uraian: Masih Dihuni','Uraian: Sengketa Hukum','Waktu Perpanjangan Dimohonkan'];
+
+  const style_th='background:#1a4a6b;color:#ffffff;font-weight:bold;font-size:10px;padding:7px 9px;white-space:nowrap;';
+  const style_label='background:#e8f0f7;font-weight:600;font-size:9.5px;color:#1a4a6b;padding:5px 9px;';
+  const style_val='font-size:10.5px;padding:5px 9px;';
+
+  let html=`<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+<head><meta charset="utf-8"><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>
+<x:Name>Relaksasi AYDA</x:Name></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->
+</head><body>
+<table border="1" style="border-collapse:collapse;font-family:Arial,sans-serif;">
+<thead><tr>${H.map(h=>`<th style="${style_th}">${h}</th>`).join('')}</tr></thead>
+<tbody><tr>
+  <td style="${style_val}">${escH(d.timestamp)}</td>
+  <td style="${style_val}font-weight:bold;color:#1a4a6b;">${escH(d.namaBPR)}</td>
+  <td style="${style_val}text-align:right;">${d.asetBPR||0}</td>
+  <td style="${style_val}text-align:right;color:#c8440a;">${d.rasioModal||0}</td>
+  <td style="${style_val}text-align:right;">${d.modalInti||0}</td>
+  <td style="${style_val}text-align:right;color:#c8440a;">${d.posisiNPL||0}</td>
+  <td style="${style_val}text-align:right;">${d.bakiDebet||0}</td>
+  <td style="${style_val}text-align:right;">${d.bakiDebetAYDA||0}</td>
+  <td style="${style_val}text-align:right;">${d.ayda_sd1||0}</td>
+  <td style="${style_val}text-align:right;">${d.ayda_1_3||0}</td>
+  <td style="${style_val}text-align:right;">${d.ayda_3_5||0}</td>
+  <td style="${style_val}text-align:right;">${d.ayda_gt5||0}</td>
+  <td style="${style_val}text-align:right;">${d.pengurangModal||0}</td>
+  <td style="${style_val}">${escH(d.penyebab||'-')}</td>
+  <td style="${style_val}">${escH(d.uraian_tidak_ada_pembeli||'')}</td>
+  <td style="${style_val}">${escH(d.uraian_pengikatan_tidak_sempurna||'')}</td>
+  <td style="${style_val}">${escH(d.uraian_masih_dihuni||'')}</td>
+  <td style="${style_val}">${escH(d.uraian_sengketa_hukum||'')}</td>
+  <td style="${style_val}">${escH(d.waktuPermohonan||'-')}</td>
+</tr></tbody></table>
+</body></html>`;
+
+  const blob=new Blob([html],{type:'application/vnd.ms-excel;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;
+  // Nama file: NamaBPR_tanggal.xls
+  const fname=d.namaBPR.replace(/[^a-zA-Z0-9]/g,'_').slice(0,30);
+  a.download=`AYDA_${fname}_${new Date().toISOString().slice(0,10)}.xls`;
+  a.click();URL.revokeObjectURL(url);
+  showToast('✓ File Excel berhasil diunduh!');
+}
+
+// ============================================================
+// RESET
+// ============================================================
+function resetForm(){
+  document.getElementById('aydaForm').reset();
+  checkedVals.clear();selWaktu='';acFromList=false;
+  document.querySelectorAll('.checkbox-item').forEach(el=>el.classList.remove('checked'));
+  document.querySelectorAll('.radio-item').forEach(el=>el.classList.remove('selected'));
+  document.querySelectorAll('.error').forEach(el=>el.classList.remove('error'));
+  document.querySelectorAll('.field-error').forEach(el=>el.classList.remove('show'));
+  document.querySelectorAll('.uraian-wrap').forEach(el=>el.classList.remove('show'));
+  document.querySelectorAll('.uraian-textarea').forEach(el=>el.value='');
+  document.querySelectorAll('.uraian-charcount span').forEach(el=>el.textContent='0');
+  document.getElementById('totalUmur').textContent='Rp 0';
+  document.getElementById('rasiopengurang').value='';
+  document.getElementById('selisihHint').style.display='none';
+  document.getElementById('progressFill').style.width='0%';
+  document.getElementById('acBadge').style.display='none';
+  document.getElementById('acClearBtn').style.display='none';
+  document.getElementById('acDropdown').classList.remove('show');
+  document.getElementById('acArrow').classList.remove('open');
+}
+
+function showToast(msg,type='success'){
+  const t=document.getElementById('toast');t.textContent=msg;
+  t.className='status-toast'+(type==='error'?' error':'')+' show';
+  setTimeout(()=>t.classList.remove('show'),3500);
+}
+
+updateProgress();
+</script>
+</body>
+</html>
